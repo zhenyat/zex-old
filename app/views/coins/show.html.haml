@@ -1,0 +1,15 @@
+%p#notice= notice
+
+%p
+  %b Name:
+  = @coin.name
+%p
+  %b Code:
+  = @coin.code
+%p
+  %b Status:
+  = @coin.status
+
+= link_to 'Edit', edit_coin_path(@coin)
+\|
+= link_to 'Back', coins_path

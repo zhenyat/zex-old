@@ -1,0 +1,21 @@
+################################################################################
+# run_config.yml:
+#   Contains config options for the Application Run:
+#     corresponding default values to be updated
+#
+#   Loaded in:  ./initializers/zt_load_config.rb
+#
+#   11.10.2016  ZT  Inherited from BKC 95km
+#   30.08.2017  'access_restricted' key is added
+################################################################################
+
+mail:
+  bcc:              evgt@mail.ru
+
+debug:
+  status:           true
+
+access_restricted:  true
+
+period:             1.day
+time_slot:          15.minutes

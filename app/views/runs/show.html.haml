@@ -1,0 +1,42 @@
+%p#notice= notice
+
+%p
+  %b Pair:
+  = @run.pair
+%p
+  %b Kind:
+  = @run.kind
+%p
+  %b Depo:
+  = @run.depo
+%p
+  %b Last:
+  = @run.last
+%p
+  %b Start:
+  = @run.start
+%p
+  %b Overlay:
+  = @run.overlay
+%p
+  %b Martingale:
+  = @run.martingale
+%p
+  %b Orders:
+  = @run.orders
+%p
+  %b Profit:
+  = @run.profit
+%p
+  %b Scale:
+  = @run.scale
+%p
+  %b Stop loss:
+  = @run.stop_loss
+%p
+  %b Status:
+  = @run.status
+
+= link_to 'Edit', edit_run_path(@run)
+\|
+= link_to 'Back', runs_path

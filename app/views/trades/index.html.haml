@@ -1,0 +1,31 @@
+%h5= "Time elapsed: #{@time_elapsed} seconds"
+%hr
+
+- i = 0
+- @pairs.each_with_index do |pair, index|
+  - if @trades[index].present?
+    %h3= "#{pair}: Trades added = #{@trades_added[i]}"
+    - i += 1
+    .container-fluid
+      %table.table.table-striped.table-hover
+        %thead.heading
+          %tr
+            %th= 'TID'
+            %th= 'Date'
+            %th= 'Type'
+            %th= "Price (#{pair.split('_').last.upcase})"
+            %th= "Amount (#{pair.split('_').first.upcase})"
+            %th= "Total (#{pair.split('_').last.upcase})"
+        %tbody
+          - @trades[index].each do |trade|
+            - if trade.timestamp > (Time.now - 5.minutes).to_i
+              %tr
+                %td= trade.tid
+                %td= date_from_timestamp trade.timestamp
+                - if trade.kind == 0
+                  %td.ask= 'Sell'
+                - else
+                  %td.bid= 'Buy'
+                %td= trade.price
+                %td= trade.amount
+                %td= (trade.price * trade.amount).round(8)

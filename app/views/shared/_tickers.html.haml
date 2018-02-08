@@ -1,0 +1,30 @@
+%h3.text-primary= 'Tickers'
+- if @tickers.present?
+  .container-fluid
+    %table.table.table-striped.table-hover
+      %thead
+        %tr
+          %th= 'Pair'
+          %th= 'Max. Price'
+          %th= 'Min. Price'
+          %th= 'Avg. Price'
+          %th= 'Volume'
+          %th= 'Vol. Currency'
+          %th= 'Last Trade Price'
+          %th= 'Buy'
+          %th= 'Sell'
+          %th= 'Updated'
+      %tbody
+        - @tickers.each do |ticker|
+          %tr
+            %td= ticker.first.first
+            %td= ticker.first.last['high']
+            %td= ticker.first.last['low']
+            %td= ticker.first.last['avg']
+            %td= ticker.first.last['vol']
+            %td= ticker.first.last['vol_cur']
+            %td= ticker.first.last['last']
+            %td= ticker.first.last['buy']
+            %td= ticker.first.last['sell']
+            %td= date_from_timestamp ticker.first.last['updated']
+

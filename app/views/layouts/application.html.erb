@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ZEX</title>
+    <%= csrf_meta_tags %>
+
+    <%= stylesheet_link_tag    'application', :media => 'all', 'data-turbolinks-track' => 'reload' %>
+    <%= javascript_include_tag 'https://www.gstatic.com/charts/loader.js' %>
+    
+    <% if (params['controller'] == 'trades' && params['action'] == 'candlesticks') %>
+      <%= Gon::Base.render_data %>
+      <%= yield :google_candlesticks_scripts %>
+    <% else %>
+      <!-- Turbolinks conflicts with Candlesticks chart rendering (requires reload) -->
+      <%= javascript_include_tag 'application', 'data-turbolinks-track' => 'reload' %>
+    <% end %>
+
+  </head>
+
+  <body>
+    <%= render 'shared/header' %>
+    <%= yield %>
+  </body>
+</html>

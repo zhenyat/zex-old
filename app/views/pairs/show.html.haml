@@ -1,0 +1,39 @@
+%p#notice= notice
+
+%p
+  %b Base:
+  = @pair.base
+%p
+  %b Quote:
+  = @pair.quote
+%p
+  %b Name:
+  = @pair.name
+%p
+  %b Code:
+  = @pair.code
+%p
+  %b Decimal places:
+  = @pair.decimal_places
+%p
+  %b Min price:
+  = @pair.min_price
+%p
+  %b Max price:
+  = @pair.max_price
+%p
+  %b Min amount:
+  = @pair.min_amount
+%p
+  %b Hidden:
+  = @pair.hidden
+%p
+  %b Fee:
+  = @pair.fee
+%p
+  %b Status:
+  = @pair.status
+
+= link_to 'Edit', edit_pair_path(@pair)
+\|
+= link_to 'Back', pairs_path

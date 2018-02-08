@@ -1,0 +1,44 @@
+################################################################################
+# default_config.yml:
+#   Contains common config options for the Application
+#   (not needed to be stored in DB)
+#
+#   Source:   http://answerstop.org/question/93679/best-way-to-create-custom-config-options-for-my-rails-app
+#
+#   Loaded to ZT_CONFIG  in:  ./initializers/zt_load_config.rb
+#
+#   Add this file to .gitignore (?)
+#
+#   NB! DO NOT UPDATE THIS FILE FOR DEBUG - use run_config.rb instead
+#
+#   11.10.2016  ZT  Inherited from BKC 95km
+#   30.08.2017  'access_restricted' key is added
+################################################################################
+
+defaults: &defaults
+
+  debug:
+    status:           false
+    path:             ''
+
+  mail:
+    bcc:              zt@mail.ru
+    path:             public/mail/attachments
+
+  access_restricted:  false
+  
+  period:             1.day
+  time_slot:          30.minutes
+  
+development:
+  <<: *defaults
+
+  debug:
+    status:           true
+    path:             log/debug.log
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults

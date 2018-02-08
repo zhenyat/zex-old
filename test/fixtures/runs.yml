@@ -1,0 +1,29 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  pair: one
+  kind: 1
+  depo: 9.99
+  last: 9.99
+  start: 1.5
+  overlay: 1.5
+  martingale: 1.5
+  orders: 1
+  profit: 1.5
+  scale: 1
+  stop_loss: 9.99
+  status: 1
+
+two:
+  pair: two
+  kind: 1
+  depo: 9.99
+  last: 9.99
+  start: 1.5
+  overlay: 1.5
+  martingale: 1.5
+  orders: 1
+  profit: 1.5
+  scale: 1
+  stop_loss: 9.99
+  status: 1

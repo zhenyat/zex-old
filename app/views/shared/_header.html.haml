@@ -1,0 +1,18 @@
+.container-fluid
+  .row
+    .col-md-1
+      %h5= link_to "Home",         root_path
+    .col-md-2
+      %h5= link_to "Add Trades",   trades_index_path
+    .col-md-2
+      %h5= link_to "Create Cash",  trades_create_cash_path
+    .col-md-2
+      %h5= link_to "Update Cash",  trades_update_cash_path
+    .col-md-2
+      %h5= link_to "Candlesticks", trades_candlesticks_path
+    .col-md-2
+      %h5= link_to "Order Book",   trades_order_book_path
+    .col-md-1
+      %h5= link_to "Runs",         runs_path
+%hr
+

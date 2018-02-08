@@ -1,0 +1,18 @@
+= simple_form_for(@pair) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.association :base
+    = f.association :quote
+    = f.input :name
+    = f.input :code
+    = f.input :decimal_places
+    = f.input :min_price
+    = f.input :max_price
+    = f.input :min_amount
+    = f.input :hidden
+    = f.input :fee
+    = f.input :status
+
+  .form-actions
+    = f.button :submit
