@@ -60,10 +60,12 @@ module DataPro
   #   - Minimum price
   #   - First trade price
   #   - Last trade price
-  #   - maximum price
-  #   - average price
-  #
+  #   - maximum price 
+  #   - average price (https://developers.google.com/chart/image/docs/gallery/compound_charts)
+  #   - Total amount
+  #   
   #  27.12.2017   ZT
+  #  14.02.2018   Total amount added
   ############################################################################## 
   def form_candle trades, time_frame
     data = []
@@ -71,13 +73,15 @@ module DataPro
     price_max   = trades.maximum(:price).to_f
     price_first = trades.first.price.to_f
     price_last  = trades.last.price.to_f
-    
+    amount_tot  = trades.sum(&:amount).to_f
+
     data << Time.at(time_frame.first).strftime('%d-%m-%Y %H:%M')
     data << price_min
     data << price_first
     data << price_last
     data << price_max
-    data << (price_max + price_min + price_last) / 3
+    data << (price_max + price_min + price_last) / 3  # to be presented as 2nd chart
+    data << amount_tot                                # to be presented as 3rd chart
     
     data
   end

@@ -28,7 +28,10 @@ function drawChart() {
       width:       1600,
       height:      1200,
       seriesType: "candlesticks",
-      series: { 1: {type: "line"} },
+      series: { 
+        1: {type: "line", color: "lightblue"},
+        2: {type: "bars", color: "lightgrey", targetAxisIndex: 2}
+      },
       bar:         { groupWidth: '61.8%' }, // 61.8% - golden ratio (default); 100% - removes space between bars.
       candlestick: {
         fallingColor: { strokeWidth: 0, fill: '#a52714' },  // red

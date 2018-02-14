@@ -18,4 +18,4 @@ debug:
 access_restricted:  true
 
 period:             1.day
-time_slot:          15.minutes
+time_slot:          30.minutes
