@@ -22,7 +22,7 @@
   %tbody
     - @runs.each do |run|
       %tr
-        %td= run.pair
+        %td= run.pair.name
         %td= run.kind
         %td= run.depo
         %td= run.last

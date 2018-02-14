@@ -53,8 +53,15 @@ module DataPro
   end
 
   ##############################################################################
-  #  Creates a candle for given trades in a time frame
+  #  Creates a candle for Trades in a given Time Frame
   #  Returns an array of a candle's data
+  #  Array elements:
+  #   - Time Frame low limit
+  #   - Minimum price
+  #   - First trade price
+  #   - Last trade price
+  #   - maximum price
+  #   - average price
   #
   #  27.12.2017   ZT
   ############################################################################## 
@@ -64,7 +71,7 @@ module DataPro
     price_max   = trades.maximum(:price).to_f
     price_first = trades.first.price.to_f
     price_last  = trades.last.price.to_f
-
+    
     data << Time.at(time_frame.first).strftime('%d-%m-%Y %H:%M')
     data << price_min
     data << price_first
