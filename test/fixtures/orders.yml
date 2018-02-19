@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  run: one
+  price: 9.99
+  amount: 9.99
+  wavg_price: 9.99
+  fix_price: MyString
+  status: 1
+
+two:
+  run: two
+  price: 9.99
+  amount: 9.99
+  wavg_price: 9.99
+  fix_price: MyString
+  status: 1

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_02_07_195744) do
+ActiveRecord::Schema.define(version: 2018_02_16_112550) do
 
   create_table "coins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -18,6 +18,18 @@ ActiveRecord::Schema.define(version: 2018_02_07_195744) do
     t.integer "status", limit: 1, default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "run_id"
+    t.decimal "price", precision: 15, scale: 5
+    t.decimal "amount", precision: 15, scale: 8
+    t.decimal "wavg_price", precision: 15, scale: 5
+    t.string "fix_price"
+    t.integer "status", limit: 1, default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["run_id"], name: "index_orders_on_run_id"
   end
 
   create_table "pairs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -41,15 +53,15 @@ ActiveRecord::Schema.define(version: 2018_02_07_195744) do
   create_table "runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "pair_id"
     t.integer "kind", limit: 1, default: 0, null: false
-    t.decimal "depo", precision: 10, null: false
-    t.decimal "last", precision: 10, null: false
-    t.float "start", default: 5.0, null: false
+    t.decimal "depo", precision: 15, scale: 5, null: false
+    t.decimal "last", precision: 15, scale: 5, null: false
+    t.float "indent", default: 5.0, null: false
     t.float "overlay", default: 10.0, null: false
     t.float "martingale", default: 15.0, null: false
-    t.integer "orders", default: 6, null: false
+    t.integer "orders_number", default: 6, null: false
     t.float "profit", default: 2.0, null: false
     t.integer "scale", limit: 1, default: 0, null: false
-    t.decimal "stop_loss", precision: 10, null: false
+    t.decimal "stop_loss", precision: 15, scale: 5, null: false
     t.integer "status", limit: 1, default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -68,6 +80,7 @@ ActiveRecord::Schema.define(version: 2018_02_07_195744) do
     t.index ["pair_id"], name: "index_trades_on_pair_id"
   end
 
+  add_foreign_key "orders", "runs"
   add_foreign_key "runs", "pairs"
   add_foreign_key "trades", "pairs"
 end

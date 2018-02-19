@@ -1,5 +1,7 @@
 class RunsController < ApplicationController
   include DataPro
+  include OrdersPro
+  
   before_action :set_run, only: [:show, :edit, :update, :destroy]
 
   # GET /runs
@@ -11,6 +13,7 @@ class RunsController < ApplicationController
   # GET /runs/1
   # GET /runs/1.json
   def show
+    @orders = @run.orders
   end
 
   # GET /runs/new
@@ -47,7 +50,7 @@ class RunsController < ApplicationController
     end
 
     gon.pair_names = @pair_names
-    gon.objects    = objects
+    gon.objects    = objects   
   end
 
   # GET /runs/1/edit
@@ -61,6 +64,7 @@ class RunsController < ApplicationController
 
     respond_to do |format|
       if @run.save
+        create_orders @run
         format.html { redirect_to @run, notice: 'Run was successfully created.' }
         format.json { render :show, status: :created, location: @run }
       else

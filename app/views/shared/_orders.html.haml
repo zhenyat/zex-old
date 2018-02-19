@@ -1,0 +1,20 @@
+- if @orders.present?
+  .container-fluid
+    %h4 Run Orders
+    %table.table.table-striped.table-hover
+      %thead
+        %tr
+          %th= 'Price'
+          %th= 'Amount'
+          %th= 'Wt Avg Price'
+          %th= 'Fix Price'
+          %th= 'Status'
+
+      %tbody
+        - @orders.each do |order|
+          %tr
+            %td= number_to_currency order.price, precision: 3
+            %td= order.amount
+            %td= number_to_currency order.wavg_price, precision: 3
+            %td= number_to_currency order.fix_price,  precision: 3
+            %td= order.status
