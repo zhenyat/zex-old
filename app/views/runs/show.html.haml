@@ -1,42 +1,33 @@
 %p#notice= notice
 
-%p
-  %b Pair:
-  = @run.pair
-%p
-  %b Kind:
-  = @run.kind
-%p
-  %b Depo:
-  = @run.depo
-%p
-  %b Last:
-  = @run.last
-%p
-  %b First Indent:
-  = @run.indent
-%p
-  %b Overlay:
-  = @run.overlay
-%p
-  %b Martingale:
-  = @run.martingale
-%p
-  %b Orders Number:
-  = @run.orders_number
-%p
-  %b Profit:
-  = @run.profit
-%p
-  %b Scale:
-  = @run.scale
-%p
-  %b Stop loss:
-  = @run.stop_loss
-%p
-  %b Status:
-  = @run.status
+.row
+  .col-md-2
+    = "Pair: #{@run.pair.code}"
+  .col-md-2
+    = "Kind: #{@run.kind}"
+  .col-md-2
+    = "Depo: #{@run.depo}"
+  .col-md-2
+    = "Last trade: #{@run.last}"
+  .col-md-2
+    = "Depo: #{@run.depo}"
+  .col-md-2
+    = "First Indent: #{@run.indent} %"
+.row
+  .col-md-2
+    = "Overlay: #{@run.overlay}"
+  .col-md-2
+    = "Martingale: #{@run.martingale} %"
+  .col-md-2
+    = "Profit: #{@run.profit} %"
+  .col-md-2
+    = "Scale: #{@run.scale}"
+  .col-md-2
+    = "Stop loss: #{@run.stop_loss}"
+  .col-md-2
+    = "Status: #{@run.status}"
 
+%br
 = link_to 'Edit', edit_run_path(@run)
 \|
 = link_to 'Back', runs_path
