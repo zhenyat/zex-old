@@ -1,4 +1,4 @@
-%h3.text-info= "Order Book (Depth): Active Orders for each Pair"
+%h3.text-info= "Order Book (Depth): Active Orders for each Pair (Sell / Buy)"
 %hr
 - if @asks.present? && @bids.present?
   .container-fluid
@@ -6,23 +6,30 @@
       - @pairs.each_with_index do |pair, index|
         .col-md-3
           %h4.text-danger= "#{pair}"
-          %table.table.table-striped.table-hover
-            %thead.heading
+          %table.table.table-striped.table-hover.table-sm
+            %thead.heading.thead-dark
+              %th.bg-danger= "Ask Amount"
+              %th.bg-danger= "@Price"
+            %tbody
+              - @asks[index].each do |ask|
+                %tr.table-danger
+                  %td= ask.last
+                  %td= ask.first
               %tr
-                %th= "Amount"
-                %th= "@Price"
+          %table.table.table-striped.table-hover.table-sm
+            %tr.table-info
+              %td= "Spread (abs / rel):"
+              - gap_abs = (@asks[index].last.first - @bids[index].first.first).round(2)
+              - gap_rel = (gap_abs / @asks[index].last.first * 100).round(3)
+              %td= "#{gap_abs} / #{gap_rel} %"
+
+          %table.table.table-striped.table-hover.table-sm
+            %thead.heading.thead-dark
+              %th.bg-success= "Bid Amount"
+              %th.bg-success= "@Price"
               %tbody
-                - @asks[index].each do |ask|
-                  %tr
-                    %td.table-danger= ask.last
-                    %td.table-danger= ask.first
-                %tr
-                  %td.table-info= "Gap (abs / rel)"
-                  - gap_abs = (@asks[index].last.first - @bids[index].first.first).round(2)
-                  - gap_rel = (gap_abs / @asks[index].last.first * 100).round(3)
-                  %td.table-info= "#{gap_abs} / #{gap_rel} %"
                 - @bids[index].each do |bid|
-                  %tr
-                    %td.table-success= bid.last
-                    %td.table-success= bid.first
+                  %tr.table-success
+                    %td= bid.last
+                    %td= bid.first
 
