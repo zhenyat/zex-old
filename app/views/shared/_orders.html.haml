@@ -4,6 +4,8 @@
     %table.table.table-striped.table-hover
       %thead
         %tr
+          %th= 'ID'
+          %th= 'WEX ID'
           %th= 'Price'
           %th= 'Amount'
           %th= 'Wt Avg Price'
@@ -13,6 +15,8 @@
       %tbody
         - @orders.each do |order|
           %tr
+            %td= order.id
+            %td= order.order_id
             %td= number_to_currency order.price, precision: 3
             %td= order.amount
             %td= number_to_currency order.wavg_price, precision: 3

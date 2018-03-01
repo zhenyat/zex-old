@@ -23,7 +23,12 @@
       .form-inputs
         = f.input :stop_loss
         = f.input :orders_number
-        = f.input :status
+        /= f.input :status
+  %br
+  .form_actions
+    .row
+      .col-md-2
+        = f.submit class: 'btn btn-sm btn-primary btn-block'
+      .col-md-1
+        = link_to 'Back', runs_path, class: 'btn btn-sm btn-secondary btn-block'
 
-  .form-actions
-    = f.button :submit

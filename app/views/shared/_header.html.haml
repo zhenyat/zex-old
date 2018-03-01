@@ -5,7 +5,7 @@
     .col-md-2
       %h5= link_to "Add Trades",   trades_index_path
     .col-md-2
-      %h5= link_to "Create Cash",  trades_create_cash_path
+      %h5= link_to "Create Cash",  trades_create_cash_path, data: { confirm: 'Are you sure?' }
     .col-md-2
       %h5= link_to "Update Cash",  trades_update_cash_path
     .col-md-2
@@ -15,4 +15,3 @@
     .col-md-1
       %h5= link_to "Runs",         runs_path
 %hr
-

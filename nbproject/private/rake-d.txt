@@ -117,6 +117,7 @@ webpacker\:install\:coffee=Install everything needed for Coffee
 webpacker\:install\:elm=Install everything needed for Elm
 webpacker\:install\:erb=Install everything needed for Erb
 webpacker\:install\:react=Install everything needed for React
+webpacker\:install\:stimulus=Install everything needed for Stimulus
 webpacker\:install\:typescript=Install everything needed for Typescript
 webpacker\:install\:vue=Install everything needed for Vue
 webpacker\:verify_install=Verifies if Webpacker is installed

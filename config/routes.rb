@@ -5,7 +5,11 @@ Rails.application.routes.draw do
   get 'trades/order_book'
   get 'trades/update_cash'
 
-  resources :runs
+#  resources :runs
+  resources :runs do
+    get :place_orders,  on: :member
+    get :cancel_orders, on: :member
+  end
   
   resources :pairs
   resources :coins

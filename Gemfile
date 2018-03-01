@@ -88,7 +88,7 @@ gem 'bootsnap', '>= 1.1.0', require: false      # Reduces boot times through cac
 
 gem 'haml-rails'                                # https://github.com/indirect/haml-rails
 
-gem 'zt_btce', :github => 'zhenyat/zt_btce', :branch => 'master'
+gem 'zt_btce', :github => 'zhenyat/zt_btce', :branch => 'master'  # Update it: $ bundle update --source 'zt_btce'
 
 # crono for jobs
 gem 'crono'

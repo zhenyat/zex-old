@@ -1,43 +1,45 @@
-%h1 Listing runs
+.container-fluid
+  %h1 Listing runs
 
-%table
-  %thead
-    %tr
-      %th Pair
-      %th Kind
-      %th Depo
-      %th Last
-      %th First Indent
-      %th Overlay
-      %th Martingale
-      %th Orders Number
-      %th Profit
-      %th Scale
-      %th Stop loss
-      %th Status
-      %th
-      %th
-      %th
-
-  %tbody
-    - @runs.each do |run|
+  %table.table.table-hover
+    %thead
       %tr
-        %td= run.pair.name
-        %td= run.kind
-        %td= run.depo
-        %td= run.last
-        %td= run.indent
-        %td= run.overlay
-        %td= run.martingale
-        %td= run.orders_number
-        %td= run.profit
-        %td= run.scale
-        %td= run.stop_loss
-        %td= run.status
-        %td= link_to 'Show', run
-        %td= link_to 'Edit', edit_run_path(run)
-        %td= link_to 'Destroy', run, method: :delete, data: { confirm: 'Are you sure?' }
+        %th Pair
+        %th Kind
+        %th Depo
+        %th Last
+        %th First Indent
+        %th Overlay
+        %th Martingale
+        %th Orders Number
+        %th Profit
+        %th Scale
+        %th Stop loss
+        %th Status
+        %th
+        %th
+        %th
 
-%br
+    %tbody
+      - @runs.each do |run|
+        %tr
+          %td= run.pair.name
+          %td= run.kind
+          %td= run.depo
+          %td= run.last
+          %td= run.indent
+          %td= run.overlay
+          %td= run.martingale
+          %td= run.orders_number
+          %td= run.profit
+          %td= run.scale
+          %td= run.stop_loss
+          %td= run.status
+          %td= link_to 'Show', run
+          %td= link_to 'Edit', edit_run_path(run)
+          %td= link_to 'Destroy', run, method: :delete, data: { confirm: 'Are you sure?' }
 
-= link_to 'New Run', new_run_path
+  %br
+  .row
+    .col-md-1
+      = link_to 'New Run', new_run_path, class: 'btn btn-sm btn-primary btn-block'
