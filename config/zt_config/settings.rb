@@ -3,8 +3,7 @@
 #                 Called by: zt_load_config.rb
 #   Relative path MUST BE applied to public/images, otherwise - sprockets error
 #
-#   11.10.2016  ZT  Inherited from BKC 95km
-#   09.11.2016  MULTILINGUAL added
+#   11.10.2016  ZT  Inherited from ...
 #   30.08.2017  'access_restricted' key is added
 ################################################################################
 

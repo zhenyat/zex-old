@@ -25,11 +25,11 @@ function drawChart() {
     options[i] = {
       title:       gon.pairs[i],
       legend:      'none',
-      width:       1600,
-      height:      1200,
+        width:     1600,  //2400
+      height:      1200,  //1800
       seriesType: "candlesticks",
       series: { 
-        1: {type: "line", color: "lightblue"},
+        1: {type: "line", color: "cyan", lineWidth: 1},
         2: {type: "bars", color: "lightgrey", targetAxisIndex: 2}
       },
       bar:         { groupWidth: '61.8%' }, // 61.8% - golden ratio (default); 100% - removes space between bars.

@@ -2,6 +2,6 @@
   = javascript_include_tag "candlesticks.js"
 %h5= "Time elapsed: #{@time_elapsed} seconds"
 %hr
-%h1 WEX Candlesticks
+%h1 WEX Candlesticks (priceMin - priceMax, priceFirst - priceLast)
 - @pairs.each do |pair|
   %div{:id => "#{pair}_chart_div"}

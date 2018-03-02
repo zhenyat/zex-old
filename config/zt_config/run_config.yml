@@ -15,7 +15,7 @@ mail:
 debug:
   status:           true
 
-access_restricted:  true
+access_restricted:  false
 
 period:             1.day
-time_slot:          30.minutes
+time_slot:          15.minutes
