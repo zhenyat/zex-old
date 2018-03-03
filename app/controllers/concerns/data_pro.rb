@@ -3,6 +3,7 @@
 #
 #   02.01.2018  Last Update
 #   08.02.2018  Updated for zex
+#   03.02.2018  Method *set_time_frame*'= was modified
 ################################################################################
 module DataPro
   extend ActiveSupport::Concern
@@ -109,10 +110,12 @@ module DataPro
   #  Sets time frame, nearest to argument time
   #
   #  29.12.2017   ZT
+  #  03.02.2018   Modified
   ##############################################################################  
   def set_time_frame time, time_slot = 30.minutes
     time_frame = []
-    time_frame[0] = Time.at(((time.to_i / time_slot).round * time_slot) + time_slot).to_i
+    time_frame[0] = (time.to_i / time_slot).round * time_slot
+#    time_frame[0] = Time.at(((time.to_i / time_slot).round * time_slot) + time_slot).to_i
     time_frame[1] = time_frame[0] + time_slot
     time_frame
   end

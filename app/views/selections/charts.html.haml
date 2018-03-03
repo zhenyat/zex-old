@@ -1,0 +1,11 @@
+- content_for :google_candlesticks_scripts do
+  = javascript_include_tag "selections.js"
+%h1 Selected candlesticks
+%h5= "Time elapsed: #{@time_elapsed} seconds"
+%hr
+%h1 Selection (priceMin - priceMax, priceFirst - priceLast)
+- for i in 0...@time_slots.count
+  %div{:id => "chart_div_#{i}"}
+
+  
+

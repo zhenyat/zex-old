@@ -1,0 +1,19 @@
+= include_gon(:init => true)
+
+.container-fluid
+  = simple_form_for :selection, :url => selections_charts_path do |f|
+    = f.error_notification
+
+    .row
+      .col-md-4
+        .form-inputs
+          = f.input :pair, :collection => Pair.active.order(:name), autofocus: true, include_blank: false
+          First Time:
+          = f.datetime_select :time_first, start_year: Time.now.year, end_year: Time.now.year + 1, :minute_step => 15
+          %br
+          %br
+          Last Time:
+          = f.datetime_select :time_last,  start_year: Time.now.year, end_year: Time.now.year + 1, :minute_step => 15
+          %br
+          %br
+          = f.submit "Select"

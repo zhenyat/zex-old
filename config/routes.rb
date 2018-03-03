@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'selections/new'
+  post 'selections/charts'
   get 'trades/candlesticks'
   get 'trades/create_cash'
   get 'trades/index'

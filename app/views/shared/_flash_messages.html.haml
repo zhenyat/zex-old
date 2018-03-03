@@ -1,4 +1,7 @@
 - if flash.present?
   - flash.each do |key, value|
-    %div{:class => "alert alert-#{key}"}= value.join("<br/>").html_safe
-    /%button.close{"data-dismiss" => "alert"} Close
+    - if value.class == String
+      %div{:class => "alert alert-#{key}"}= value.html_safe
+    - else
+      %div{:class => "alert alert-#{key}"}= value.join("<br/>").html_safe
+      /%button.close{"data-dismiss" => "alert"} Close
