@@ -77,6 +77,39 @@ def candlesticks
     @time_elapsed = (t_finish - t_start).round(2)
   end
   
+  def create_tick_cash
+    t_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+
+#   time_slot = 1.minute
+    period    = PERIOD + TIME_SLOT  # Period to select data for (last 24 hours, e.g from 15:00 to 15:00)
+      
+    # Resulting arrays
+    pairs   = []
+    candles = []
+
+    Pair.active.all.each do |pair|
+      pair_name = pair.name
+      
+      trades = Trade.where('pair_id = ? AND timestamp >= ?', pair.id, (Time.now - period).to_i).order(:timestamp)   # from lower to higher values
+      
+      trades.find_in_batches(batch_size: 200) do |tic_trades|
+        time_first = tic_trades.first.timestamp
+        candles << form_candle(tic_trades, time_first) if tic_trades.present?
+      end
+      
+      # Store result in a file
+      store_cashed_ticks pair_name, candles
+      
+      # Show candles (first / last)
+      @pairs         << pair_name
+      @candles_first << candles.first
+      @candles_last  << candles.last
+
+    end
+    
+    t_finish      = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    @time_elapsed = (t_finish - t_start).round(2)
+  end
   
   def index
     t_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -168,5 +201,47 @@ def order_book
 
     t_finish      = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     @time_elapsed = (t_finish - t_start).round(2)    
+  end
+
+  # https://www.topdogtrading.com/question-what-is-the-best-interval-for-day-trading/
+  def tick_charts
+    puts "ZT! Ticks!"
+    t_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    
+    period    = PERIOD + TIME_SLOT  # Period to select data for (last 24 hours, e.g from 15:00 to 15:00)
+      
+    # Resulting arrays
+    @pairs     = []
+    candles    = []
+    time_frame = []  # required to meet form_candle args
+
+    Pair.active.each_with_index do |pair, index|
+      pair_name = pair.name
+      candles[index] = []
+      
+      trades = Trade.where('pair_id = ? AND timestamp >= ?', pair.id, (Time.now - period).to_i).order(:timestamp)   # from lower to higher values
+      puts "ZT! trades = #{trades.count}"
+#      candles = form_tick_candles(trades) if trades.present?
+      
+      trades.find_in_batches(batch_size: 200) do |tic_trades|
+        time_frame[0]  = tic_trades.first.timestamp
+        new_trades = Trade.where(id: tic_trades.map(&:id))
+        candles[index] << form_candle(new_trades, time_frame) if new_trades.present?
+      end
+      
+      # Show candles (first / last)
+      @pairs         << pair_name
+#      @candles_first << candles.first
+#      @candles_last  << candles.last
+    end
+    puts "ZT! @pairs = #{@pairs}"
+    puts "ZT! #{candles.class} - #{candles.count}"
+    puts "ZT! #{candles}"
+    gon.pairs   = @pairs
+    gon.candles = candles
+      
+    
+    t_finish      = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    @time_elapsed = (t_finish - t_start).round(2)
   end
 end

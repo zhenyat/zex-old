@@ -1,7 +1,7 @@
 /*******************************************************************************
- * Draws candlestcik charts for all Pairs aka WEX charts, using Google Charts
+ * Draws candlestcik charts for selected Time Frames with different Time Slots
  * 
- * 28.12.2017   ZT
+ * 03.02.2018   ZT
  ******************************************************************************/
 // Load the Visualization API and the corechart package.
 google.charts.load('current', {'packages':['corechart']});

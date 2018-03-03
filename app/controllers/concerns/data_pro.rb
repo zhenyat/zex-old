@@ -87,6 +87,13 @@ module DataPro
     data
   end
 
+  def form_tick_candle trades
+    count = 0
+#    trades.find_each
+    
+    
+  end
+  
   def get_ticker pair_name
     ZtBtce.ticker pairs: pair_name 
   end

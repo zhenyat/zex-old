@@ -25,8 +25,8 @@ function drawChart() {
     options[i] = {
       title:       gon.pairs[i],
       legend:      'none',
-        width:     2400, //1600,  //2400
-      height:      1800, //1200,  //1800
+        width:     1600,  //2400
+      height:      1200,  //1800
       seriesType: "candlesticks",
       series: { 
         1: {type: "line", color: "cyan", lineWidth: 1},

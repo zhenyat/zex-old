@@ -1,11 +1,13 @@
 Rails.application.routes.draw do
-  get 'selections/new'
+  get  'selections/new'
   post 'selections/charts'
-  get 'trades/candlesticks'
-  get 'trades/create_cash'
-  get 'trades/index'
-  get 'trades/order_book'
-  get 'trades/update_cash'
+  
+  get  'trades/candlesticks'
+  get  'trades/create_cash'
+  get  'trades/index'
+  get  'trades/order_book'
+  get  'trades/tick_charts'
+  get  'trades/update_cash'
 
 #  resources :runs
   resources :runs do

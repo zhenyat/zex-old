@@ -10,8 +10,7 @@ class SelectionsController < ApplicationController
     @pair       = Pair.find(params['selection']['pair'].to_i)
     @time_first = Time.new  params['selection']['time_first(1i)'].to_i, params['selection']['time_first(2i)'].to_i, params['selection']['time_first(3i)'].to_i, params['selection']['time_first(4i)'].to_i, params['selection']['time_first(5i)'].to_i
     @time_last  = Time.new  params['selection']['time_last(1i)'].to_i,  params['selection']['time_last(2i)'].to_i,  params['selection']['time_last(3i)'].to_i,  params['selection']['time_last(4i)'].to_i,  params['selection']['time_last(5i)'].to_i
-puts "ZT! @time_first / @time_last: #{@time_first} / #{@time_last }"
-#    @time_slots = [300, 600]  # minutes
+
     @time_slots = [60, 120, 300, 600, 900]  # seconds
     trades = Trade.where('pair_id = ? AND timestamp >= ? AND timestamp <= ?', @pair.id, @time_first.to_i, @time_last.to_i,).order(:timestamp)
 

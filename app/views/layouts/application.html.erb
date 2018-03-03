@@ -7,7 +7,7 @@
     <%= stylesheet_link_tag    'application', :media => 'all', 'data-turbolinks-track' => 'reload' %>
     <%= javascript_include_tag 'https://www.gstatic.com/charts/loader.js' %>
     
-    <% if (params['controller'] == 'trades' && params['action'] == 'candlesticks') || (params['controller'] == 'selections' && params['action'] == 'charts')%>
+    <% if (params['controller'] == 'trades' && params['action'] == 'candlesticks') || (params['controller'] == 'trades' && params['action'] == 'tick_charts') || (params['controller'] == 'selections' && params['action'] == 'charts')%>
       <%= Gon::Base.render_data %>
       <%= yield :google_candlesticks_scripts %>
     <% else %>
