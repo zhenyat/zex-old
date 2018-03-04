@@ -4,7 +4,6 @@ class TradesController < ApplicationController
 def candlesticks
     t_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
-#   time_slot = 1.minute
     period    = PERIOD + TIME_SLOT  # Period to select data for (last 24 hours, e.g from 15:00 to 15:00)
       
     # Resulting arrays
