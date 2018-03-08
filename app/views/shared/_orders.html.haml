@@ -10,6 +10,7 @@
           %th= 'Amount'
           %th= 'Wt Avg Price'
           %th= 'Fix Price'
+          %th= 'Fix Amount'
           %th= 'Status'
 
       %tbody
@@ -21,4 +22,5 @@
             %td= order.amount
             %td= number_to_currency order.wavg_price, precision: 3
             %td= number_to_currency order.fix_price,  precision: 3
+            %td= order.fix_amount
             %td= order.status

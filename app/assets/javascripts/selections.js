@@ -14,7 +14,22 @@ function drawChart() {
   var data    = [];
   var options = [];
   var len     = gon.candles.length;
+  
+  // Time slots         1     2      5    10    15    30  minutes
+  // var chartWidth  = [ 7200, 7200, 6400, 6400, 1600, 1600];
+  // var chartHeight = [  800,  800,  800,  800,  800,  800];
 
+  if (gon.period <= 120.0) {          // <= 2 hours
+    var chartWidth = 1200;
+  } else if (gon.period <= 240.0) {   // <= 4 hours
+    var chartWidth = 2400;
+  } else if (gon.period <= 360.0) {   // <= 6 hours
+    var chartWidth = 4800;
+  } else {
+    var chartWidth = 9600;
+  };
+  var chartHeight = 800;
+  
   for (i = 0; i < len; i++) {
     data[i] = google.visualization.arrayToDataTable(
       gon.candles[i],
@@ -24,9 +39,9 @@ function drawChart() {
     options[i] = {
       title:       'Time Slot: ' + (gon.time_slots[i] / 60).toString() + ' min',
       legend:      'none',
-       width:      1600,  //2400
-      height:      1200,  //1800
-      seriesType: "candlesticks",
+      width:       chartWidth[i],
+      height:      chartHeight[i],
+      seriesType:  "candlesticks",
       series: { 
         1: {type: "line", color: "cyan", lineWidth: 1},
         2: {type: "bars", color: "lightgrey", targetAxisIndex: 2}

@@ -24,9 +24,10 @@ def candlesticks
     end
 
     # Resulting data for charts
-    gon.pairs   = pairs
-    gon.candles = candles
-    
+    gon.pairs     = pairs
+    gon.candles   = candles
+    gon.time_slot = TIME_SLOT
+
     @pairs = pairs
     
     t_finish      = Process.clock_gettime(Process::CLOCK_MONOTONIC)
@@ -237,8 +238,7 @@ def order_book
     puts "ZT! #{candles.class} - #{candles.count}"
     puts "ZT! #{candles}"
     gon.pairs   = @pairs
-    gon.candles = candles
-      
+    gon.candles = candles  
     
     t_finish      = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     @time_elapsed = (t_finish - t_start).round(2)

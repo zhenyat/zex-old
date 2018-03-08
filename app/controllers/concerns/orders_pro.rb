@@ -2,17 +2,48 @@
 #   Orders processing module
 #
 #   19.02.2018  ZT
+#   06.03.2018  New methods (order cancellation)
 ################################################################################
 
 module OrdersPro
   extend ActiveSupport::Concern
   
+  def cancel_order order
+
+    response = ZtBtce.cancel_order order_id: order.order_id
+    
+    if response['success'] == 0                       # Error
+      order.status = 'rejected'
+      order.error  = response['error']
+      order.save
+      flash[:danger] = "Order #{order.id}: #{order.error}"
+    else                                              # Order has been canceled
+      flash[:danger] = []
+      order.status = 'canceled'
+      order.error = nil
+      order.save
+    end
+  end
+  
+  # Creates Fix Order for the Run
+  def create_fix_order run, order
+    # Check that all opposite orders are not active
+    if run.orders.active.present?
+      {"success": 1, "error": "Please cancel all Run's orders at first"}
+    else
+      Order.create run_id: run.id,  price: order.price, amount: order.amount,
+                   wavg_price: nil, fix_price: nil
+      {"success": 0, "created_order_id": Order.last.id}         
+    end
+  end
+  
+  # Creates all Orders for the Run
   def create_orders run
     orders = set_orders run
     for i in 0...run.orders_number
-      Order.create run_id:    run.id,               price:      orders[i]['price'], 
-                   amount:    orders[i]['amount'],  wavg_price: orders[i]['wavg_price'], 
-                   fix_price: orders[i]['fix_price']
+      Order.create run_id:    run.id,                      price: orders[i]['price'], 
+                   amount:    orders[i]['amount'],    wavg_price: orders[i]['wavg_price'], 
+                   fix_price: orders[i]['fix_price'], fix_amount: orders[i]['fix_amount']
     end
   end
   
@@ -68,10 +99,11 @@ module OrdersPro
     #####   Orders    #####
     for i in 0...run.orders_number
       order = {}
-      order['price']      = prices[i]
-      order['amount']     = base_amounts[i]
-      order['wavg_price'] = wavg_prices[i]
-      order['fix_price']  = fix_prices[i]
+      order['price']       = prices[i]
+      order['amount']      = base_amounts[i]
+      order['wavg_price']  = wavg_prices[i]
+      order['fix_price']   = fix_prices[i]
+      order['fix_amount']  = fix_amounts[i]
       orders[i] = order
     end
     
@@ -79,7 +111,7 @@ module OrdersPro
   end
 
   def set_kind kind
-    kind == 'ask' ? 1 : -1
+    kind == 'ask' ? -1 : 1
   end
 
   # TBD

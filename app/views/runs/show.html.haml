@@ -16,7 +16,7 @@
       = "First Indent: #{@run.indent} %"
   .row
     .col-md-2
-      = "Overlay: #{@run.overlay}"
+      = "Overlay: #{@run.overlay} %"
     .col-md-2
       = "Martingale: #{@run.martingale} %"
     .col-md-2
@@ -37,5 +37,5 @@
         = link_to 'Edit', edit_run_path(@run), class: 'btn btn-sm btn-primary btn-block'
       .col-md-1
         = link_to 'Back', runs_path, class: 'btn btn-sm btn-secondary btn-block'
-      .col-md-2
+      .col-md-1
         = link_to 'Place Orders', place_orders_run_path, class: 'btn btn-sm btn-info btn-block'

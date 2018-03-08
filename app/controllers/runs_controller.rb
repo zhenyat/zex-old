@@ -4,6 +4,56 @@ class RunsController < ApplicationController
   
   before_action :set_run, only: [:show, :edit, :update, :destroy]
 
+  def cancel_run
+    
+  end
+  
+  # Cancel all Run's non-closed yet Orders 
+  def cancel_orders
+    run           = Run.find(params['id'])
+    orders_active = run.orders.active
+    
+    if orders_active.present?
+      orders_active.each do |order|
+        cancel_order order
+    end
+
+    # Need to create Fix Order
+    fix_order            = Order.new
+    fix_order.run_id     = run.id
+    fix_order.amount     = 0.0
+    fix_order.wavg_price = nil
+    fix_order.fix_price  = nil
+    
+    # Canceled or executed partly order - gets its Fix
+    orders_canc_or_exec_part = run.orders.canc_or_exec_part
+    if orders_canc_or_exec_part.present?
+      canc_order = orders_canc_or_exec_part.first
+
+      fix_order.price  = canc_order.fix_price
+      fix_order.amount = canc_order.amount
+    end
+
+      
+      amount = order_exec_part * 
+
+      
+      place_fixed_order 
+    end
+     
+    if order_exec_part.nil?
+      order_last_exec = orders.find_by("status = ?", 'executed').order(:id).last
+      if order_last_exec.nil?
+        
+      end
+    end
+    orders.reverse.each_with_index do |order, index|
+      if order.status == 'executed' || order.status == 'cxnd_or_exec_part'
+      end
+    end
+    
+  end
+  
   # GET /runs
   # GET /runs.json
   def index

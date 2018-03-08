@@ -16,6 +16,17 @@ function drawChart() {
   var options = [];
   var len     = gon.pairs.length;
   
+  if (gon.time_slot == 60 || gon.time_slot == 120) {
+    chartWidth  = 14400;
+    chartHeight = 800;
+  } else if (gon.time_slot == 300 || gon.time_slot == 600) {
+    chartWidth  = 6400;
+    chartHeight = 800;
+  } else {
+    chartWidth  = 1600;
+    chartHeight = 800;
+  };
+
   for (i = 0; i < len; i++) {
     data[i] = google.visualization.arrayToDataTable(
       gon.candles[i],
@@ -25,9 +36,9 @@ function drawChart() {
     options[i] = {
       title:       gon.pairs[i],
       legend:      'none',
-      width:       1600,  //2400, 14400
-      height:      1200,  //1800,   1800
-      seriesType: "candlesticks",
+      width:       chartWidth,
+      height:      chartHeight,
+      seriesType:  "candlesticks",
       series: { 
         1: {type: "line", color: "cyan", lineWidth: 1},
         2: {type: "bars", color: "lightgrey", targetAxisIndex: 2}

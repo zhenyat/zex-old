@@ -27,6 +27,7 @@ ActiveRecord::Schema.define(version: 2018_02_16_112550) do
     t.decimal "amount", precision: 15, scale: 8
     t.decimal "wavg_price", precision: 15, scale: 5
     t.string "fix_price"
+    t.decimal "fix_amount", precision: 15, scale: 8
     t.string "error"
     t.integer "status", limit: 1, default: 0, null: false
     t.datetime "created_at", null: false
