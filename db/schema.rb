@@ -22,14 +22,14 @@ ActiveRecord::Schema.define(version: 2018_02_16_112550) do
 
   create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "run_id"
-    t.integer "order_id"
+    t.integer "ex_id"
     t.decimal "price", precision: 15, scale: 5
     t.decimal "amount", precision: 15, scale: 8
     t.decimal "wavg_price", precision: 15, scale: 5
     t.string "fix_price"
     t.decimal "fix_amount", precision: 15, scale: 8
     t.string "error"
-    t.integer "status", limit: 1, default: 0, null: false
+    t.integer "status", limit: 1, default: 4, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["run_id"], name: "index_orders_on_run_id"

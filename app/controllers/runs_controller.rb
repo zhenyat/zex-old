@@ -35,7 +35,7 @@ class RunsController < ApplicationController
     end
 
       
-      amount = order_exec_part * 
+#      amount = order_exec_part * 
 
       
       place_fixed_order 
@@ -167,9 +167,9 @@ class RunsController < ApplicationController
         order.save
         flash[:danger] << "Order #{order.id}: #{order.error}"
       else                                            # Order has been placed
-        order.order_id = response['return']['order_id']
+        order.ex_id = response['return']['order_id']
         
-        if order.order_id == 0                          # Order was fully 'matched'
+        if order.ex_id == 0                          # Order was fully 'matched'
           order.status = 'executed'
         elsif
           order.status = 'active'

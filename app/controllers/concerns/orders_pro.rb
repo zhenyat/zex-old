@@ -10,7 +10,7 @@ module OrdersPro
   
   def cancel_order order
 
-    response = ZtBtce.cancel_order order_id: order.order_id
+    response = ZtBtce.cancel_order order_id: order.ex_id
     
     if response['success'] == 0                       # Error
       order.status = 'rejected'
@@ -29,11 +29,11 @@ module OrdersPro
   def create_fix_order run, order
     # Check that all opposite orders are not active
     if run.orders.active.present?
-      {"success": 1, "error": "Please cancel all Run's orders at first"}
+      {"success" => 1, "error" => "Please cancel all Run's orders at first"}
     else
       Order.create run_id: run.id,  price: order.price, amount: order.amount,
                    wavg_price: nil, fix_price: nil
-      {"success": 0, "created_order_id": Order.last.id}         
+      {"success" => 0, "created_order_id" => Order.last.id}         
     end
   end
   
@@ -69,7 +69,7 @@ module OrdersPro
     if run.scale == 'linear'
       prices = set_plain_prices run
     else
-      prices = set_logarithmic_prices #run
+      prices = set_logarithmic_prices run
     end
 
     #####   Calculate order amounts   #####
@@ -114,18 +114,54 @@ module OrdersPro
     kind == 'ask' ? -1 : 1
   end
 
-  # TBD
-  def set_logarithmic_prices #run
+  # TYhis is for testing only
+  def set_logarithmic_prices_test run
 #    prices = Array.new(run.orders_number)
     [1535.523, 1519.899, 1500.775, 1476.121, 1441.373, 1381.971]
   end
 
+  def set_logarithmic_prices run
+    prices             = []
+    kind               = set_kind(run.kind)
+    increments         = run.orders_number - 1
+    prices[0]          = run.last     * (1.0 - kind * run.indent  / 100.0)
+    prices[increments] = prices.first * (1.0 - kind * run.overlay / 100.0)
+ 
+    if run.kind == 'bid'
+      prices[0], prices[-1] = prices[-1], prices[0]   # swap first & last (must be increased order)
+    end
+   
+    # values for calculation
+    x1_min     = prices.first
+    x1_max     = prices.last
+    log_x1_min = Math.log10(x1_min)
+    lod_diff   = Math.log10(x1_max / x1_min)
+    
+    x2_min     = 1
+    x2_max     = 10
+    x2_diff    = x2_max - x2_min
+    fraction   = 0.4              # Empirical value
+    x2         = x2_min           # initial value (for price.first)
+
+    for i in 1...increments   # excluding first & last
+      x2        = (x2_max - x2) * fraction + x2
+      power     = log_x1_min + lod_diff / x2_diff * (x2 - x2_min)
+      prices[i] = 10**power
+    end
+    
+    if run.kind == 'bid'
+      prices.reverse!
+    end
+    
+    prices
+  end
+  
   def set_plain_prices run
     prices             = []
     kind               = set_kind(run.kind)
     increments         = run.orders_number - 1
-    prices[0]          = run.last     * (1.0 + kind * run.indent  / 100.0)
-    prices[increments] = prices.first * (1.0 + kind * run.overlay / 100.0)
+    prices[0]          = run.last     * (1.0 - kind * run.indent  / 100.0)
+    prices[increments] = prices.first * (1.0 - kind * run.overlay / 100.0)
     increment          = (prices.last - prices.first) / increments
 
     for i in (1..run.orders_number)
@@ -133,6 +169,30 @@ module OrdersPro
     end
     
     prices
+  end
+  
+  # Preliminary - to be tested
+  def trace_order order
+    response = ZtBtce.order_info order_id: order.ex_id
+    
+    if response['success'] == 0                         # Error
+      order.status = 'rejected'
+      order.error  = response['error']
+ 
+      flash[:danger] = "Order #{order.id}: #{order.error}"
+    else                                                
+      order.status = response['return']['status']
+      order.error = nil
+      
+#      if order.ex_id == 0           # Order was fully 'matched'
+#        order.status = 'executed'
+#      elsif
+#        order.status = 'active'
+#      end
+    end
+    order.save
+    
+    order.status
   end
 end
 
