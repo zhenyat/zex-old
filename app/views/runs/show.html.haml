@@ -1,13 +1,14 @@
 .container-fluid
   %div= render 'shared/flash_messages'
-  %hr
+
+  %h5= "Run (ID = #{@run.id})"
   .row
     .col-md-2
       = "Pair: #{@run.pair.code}"
     .col-md-2
       = "Kind: #{@run.kind}"
     .col-md-2
-      = "Depo: #{@run.depo}"
+      = "Orders Number: #{@run.orders_number}"
     .col-md-2
       = "Last trade: #{@run.last}"
     .col-md-2
@@ -31,11 +32,22 @@
   %hr
   %div= render 'shared/orders'
 
-  .form_actions
+  %div= render 'shared/fix_orders'
+
+  %hr
+  .form-actions
     .row
       .col-md-1
         = link_to 'Edit', edit_run_path(@run), class: 'btn btn-sm btn-primary btn-block'
       .col-md-1
         = link_to 'Back', runs_path, class: 'btn btn-sm btn-secondary btn-block'
-      .col-md-1
+
+      .col-md-1.offset-md-2
         = link_to 'Place Orders', place_orders_run_path, class: 'btn btn-sm btn-info btn-block'
+      .col-md-1
+        = link_to 'Check Orders', check_orders_run_path, class: 'btn btn-sm btn-info btn-block'
+      - if @fix_orders.present?
+        .col-md-2.offset-md-1
+          = link_to 'Place Fix Order', place_fix_order_run_path, class: 'btn btn-sm btn-warning btn-block'
+        .col-md-2
+          = link_to 'Check Fix Orders', check_fix_orders_run_path, class: 'btn btn-sm btn-warning btn-block'

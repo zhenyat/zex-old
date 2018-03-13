@@ -38,7 +38,7 @@ class RunsController < ApplicationController
 #      amount = order_exec_part * 
 
       
-      place_fixed_order 
+      place_fix_order run, executed_order
     end
      
     if order_exec_part.nil?
@@ -54,19 +54,40 @@ class RunsController < ApplicationController
     
   end
   
-  # GET /runs
-  # GET /runs.json
+  def check_orders
+    run  = Run.find(params['id'])
+    puts "ZT! check_orders: #{run.inspect}"
+#    run.orders.each do |order|
+#      if order.active?
+#        
+#      end
+#    end
+    redirect_to run
+  end
+  
+  def check_fix_orders
+    run  = Run.find(params['id'])
+    
+    @fix_orders = run.fix_orders
+    if @fix_orders.present?
+      @fix_orders.each do |fix_order|
+        trace_order fix_order
+      end
+    end
+    
+    redirect_to run
+  end
+  
   def index
     @runs = Run.all
   end
 
-  # GET /runs/1
-  # GET /runs/1.json
   def show
-    @orders = @run.orders
+    @orders     = @run.orders
+    @fix_orders = @run.fix_orders
+    gon.orders  = @orders.first
   end
 
-  # GET /runs/new
   def new
     @run = Run.new
     
@@ -168,22 +189,21 @@ class RunsController < ApplicationController
         flash[:danger] << "Order #{order.id}: #{order.error}"
       else                                            # Order has been placed
         order.ex_id = response['return']['order_id']
+
+        # Order was fully 'matched' if its id = 0
+        order.status = (order.ex_id == 0) ? 'executed' : 'active'
         
-        if order.ex_id == 0                          # Order was fully 'matched'
-          order.status = 'executed'
-        elsif
-          order.status = 'active'
-        end
-        
-        order.error = nil
+        order.error  = nil
         order.save
       end
     end
+    
     if flash[:danger].empty?
       run.status = 'active'
       run.save!
       flash[:success] = "Well done"
     end
+    
     redirect_to run
   end
   

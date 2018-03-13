@@ -9,10 +9,14 @@ Rails.application.routes.draw do
   get  'trades/tick_charts'
   get  'trades/update_cash'
 
-#  resources :runs
   resources :runs do
-    get :place_orders,  on: :member
-    get :cancel_orders, on: :member
+    get :cancel_orders,     on: :member
+    get :check_orders,      on: :member
+    get :place_orders,      on: :member
+    
+    get :cancel_fix_order,  on: :member
+    get :check_fix_orders,  on: :member
+    get :place_fix_order,   on: :member
   end
   
   resources :pairs

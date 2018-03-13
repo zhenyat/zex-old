@@ -1,0 +1,21 @@
+- if @fix_orders.present?
+  .container-fluid
+    %h
+    %h5 Fix Orders
+    %table.table.table-striped.table-hover
+      %thead
+        %tr
+          %th= 'ID'
+          %th= 'EX ID'
+          %th= 'Price'
+          %th= 'Amount'
+          %th= 'Status'
+
+      %tbody
+        - @fix_orders.each do |fix_order|
+          %tr
+            %td= fix_order.id
+            %td= fix_order.ex_id
+            %td= number_to_currency fix_order.price, precision: 3
+            %td= fix_order.amount
+            %td= fix_order.status

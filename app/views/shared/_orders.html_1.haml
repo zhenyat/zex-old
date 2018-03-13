@@ -24,5 +24,3 @@
             %td= number_to_currency order.fix_price,  precision: 3
             %td= order.fix_amount
             %td= order.status
-            - if order.x_id.present?
-              %td= link_to 'More', "#", class: 'btn btn-sm btn-outline-dark btn-block', onclick: "alert('Order EX ID: ' + #{order.x_id} + \"\\nPair: \" + \"#{order.x_pair}\" + \"\\nType: \" + \"#{order.x_type}\" + \"\\nx_start_amount: \" + #{order.x_start_amount} + \"\\nAmount: \" + #{order.x_amount} + \"\\nRate: \" + #{order.x_rate} + \"\\nTimestamp: \" + #{order.x_timestamp} + \"\\nStatus: \" + \"#{order.x_status}\")"

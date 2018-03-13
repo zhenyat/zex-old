@@ -25,16 +25,11 @@ module OrdersPro
     end
   end
   
-  # Creates Fix Order for the Run
+  # Creates Fix Order for the *run* after the last executed *order*
   def create_fix_order run, order
-    # Check that all opposite orders are not active
-    if run.orders.active.present?
-      {"success" => 1, "error" => "Please cancel all Run's orders at first"}
-    else
-      Order.create run_id: run.id,  price: order.price, amount: order.amount,
-                   wavg_price: nil, fix_price: nil
-      {"success" => 0, "created_order_id" => Order.last.id}         
-    end
+      FixOrder.create run_id: run.id, price: order.price, amount: order.amount
+    
+    
   end
   
   # Creates all Orders for the Run
@@ -99,11 +94,11 @@ module OrdersPro
     #####   Orders    #####
     for i in 0...run.orders_number
       order = {}
-      order['price']       = prices[i]
-      order['amount']      = base_amounts[i]
-      order['wavg_price']  = wavg_prices[i]
-      order['fix_price']   = fix_prices[i]
-      order['fix_amount']  = fix_amounts[i]
+      order['price']      = prices[i]
+      order['amount']     = base_amounts[i]
+      order['wavg_price'] = wavg_prices[i]
+      order['fix_price']  = fix_prices[i]
+      order['fix_amount'] = fix_amounts[i]
       orders[i] = order
     end
     
@@ -115,12 +110,12 @@ module OrdersPro
   end
 
   # TYhis is for testing only
-  def set_logarithmic_prices_test run
+  def set_logarithmic_prices run
 #    prices = Array.new(run.orders_number)
     [1535.523, 1519.899, 1500.775, 1476.121, 1441.373, 1381.971]
   end
 
-  def set_logarithmic_prices run
+  def set_logarithmic_prices_new run
     prices             = []
     kind               = set_kind(run.kind)
     increments         = run.orders_number - 1
@@ -182,17 +177,15 @@ module OrdersPro
       flash[:danger] = "Order #{order.id}: #{order.error}"
     else                                                
       order.status = response['return']['status']
-      order.error = nil
+      order.error  = nil
       
-#      if order.ex_id == 0           # Order was fully 'matched'
-#        order.status = 'executed'
-#      elsif
-#        order.status = 'active'
-#      end
+      if order.ex_id == 0           # Order was fully 'matched'
+        order.status = 'executed'
+      elsif
+        order.status = 'active'
+      end
     end
     order.save
-    
-    order.status
   end
 end
 

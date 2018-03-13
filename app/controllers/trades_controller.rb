@@ -205,7 +205,6 @@ def order_book
 
   # https://www.topdogtrading.com/question-what-is-the-best-interval-for-day-trading/
   def tick_charts
-    puts "ZT! Ticks!"
     t_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     
     period    = PERIOD + TIME_SLOT  # Period to select data for (last 24 hours, e.g from 15:00 to 15:00)
@@ -220,7 +219,6 @@ def order_book
       candles[index] = []
       
       trades = Trade.where('pair_id = ? AND timestamp >= ?', pair.id, (Time.now - period).to_i).order(:timestamp)   # from lower to higher values
-      puts "ZT! trades = #{trades.count}"
 #      candles = form_tick_candles(trades) if trades.present?
       
       trades.find_in_batches(batch_size: 200) do |tic_trades|
@@ -234,9 +232,6 @@ def order_book
 #      @candles_first << candles.first
 #      @candles_last  << candles.last
     end
-    puts "ZT! @pairs = #{@pairs}"
-    puts "ZT! #{candles.class} - #{candles.count}"
-    puts "ZT! #{candles}"
     gon.pairs   = @pairs
     gon.candles = candles  
     
