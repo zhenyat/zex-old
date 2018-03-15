@@ -8,28 +8,61 @@
 module OrdersPro
   extend ActiveSupport::Concern
   
+  ##############################################################################
+  # Cancel the *order*
+  ##############################################################################
   def cancel_order order
-
-    response = ZtBtce.cancel_order order_id: order.ex_id
+    response  = ZtBtce.cancel_order order_id: order.x_id
+  
+    error_msg = handle_response order, response
     
-    if response['success'] == 0                       # Error
-      order.status = 'rejected'
-      order.error  = response['error']
-      order.save
-      flash[:danger] = "Order #{order.id}: #{order.error}"
-    else                                              # Order has been canceled
-      flash[:danger] = []
-      order.status = 'canceled'
-      order.error = nil
-      order.save
+    flash[:danger] = error_msg if error_msg.present? 
+    
+    if flash[:danger].empty?
+      run.status = 'active'
+      run.save!
+      
+      flash.discard
+      flash[:success] = "Well done! Orders have been placed"
     end
   end
   
+  ##############################################################################
+  # Checks *order*
+  # 
+  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
+  ##############################################################################
+  def check_order order
+    puts "ZT! #{order.x_id}"
+    response = ZtBtce.order_info order.x_id
+
+    if response['success'] == 0                             # Error
+      order.status = 'rejected'
+      order.error  = response['error']
+    else
+      order.x_timestamp = response['return']['timestamp_created'] if order.x_timestamp.nil?
+
+      # Just some verifications
+      if order.amount == response['return']['start_amount'] && order.price == response['return']['rate'] 
+        order.x_rest_amount = response['return']['amount']
+        order.x_done_amount = response['return']['start_amount'] - order.x_rest_amount
+        order.status        = response['return']['status']
+        order.error         = nil
+      else                                                  # Something went wrong
+        order.status = 'wrong'
+        order.error  = "Something went wrong: price = #{order['return']['rate']}; amount = #{['return']['start_amount']}"
+      end 
+    end
+    
+    order.save!
+    "Order #{order.id}: #{order.error}" if order.error.present?   # Return error message
+  end
+  
+  ##############################################################################
   # Creates Fix Order for the *run* after the last executed *order*
+  ##############################################################################
   def create_fix_order run, order
-      FixOrder.create run_id: run.id, price: order.price, amount: order.amount
-    
-    
+      FixOrder.create run_id: run.id, price: order.fix_price, amount: order.fix_amount 
   end
   
   # Creates all Orders for the Run
@@ -41,7 +74,78 @@ module OrdersPro
                    fix_price: orders[i]['fix_price'], fix_amount: orders[i]['fix_amount']
     end
   end
+
+  ##############################################################################
+  # Places *order* or *fix_order*
+  # 
+  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
+  ##############################################################################
+  def place_order order, fix = false
+    run  = order.run
+    pair = run.pair.name
+    if fix
+      type = (run.kind == 'ask') ? 'buy' : 'sell'  # opposite to Run's kind
+    else
+      type = (run.kind == 'ask') ? 'sell' : 'buy'
+    end
+    
+    response = ZtBtce.trade pair: pair, type: type, rate: order.price.round(3), amount: order.amount
+
+    if response['success'] == 0                             # Error
+      order.status = 'rejected'
+      order.error  = response['error']
+    else                                                    # Order has been placed
+      order.x_id          = response['return']['order_id']
+      order.x_done_amount = response['return']['received']
+      order.x_rest_amount = response['return']['remains']
+
+      pair_name     = order.run.pair.name
+      order.x_base  = response['return']['funds'][pair_name.split('_').first]
+      order.x_quote = response['return']['funds'][pair_name.split('_').first]
+
+      # Order was fully 'matched' if its id = 0
+      order.status = (order.x_id == 0) ? 'executed' : 'active'
+
+      order.error  = nil
+    end
+
+    order.save!
+    "Order #{order.id}: #{order.error}" if order.error.present?   # Return error message 
+  end
+    
+  ##############################################################################
+  # Handles API *response* and updates DB *order* record properly
+  ##############################################################################
+#  def handle_response order, response
+#    if response['success'] == 0                       # Error
+#      order.status = 'rejected'
+#      order.error  = response['error']
+#      order.save
+#      
+#      "Order #{order.id}: #{order.error}"             # Return error message
+#      
+#    else                                              # Order has been handled
+#      order.x_id          = response['return']['order_id']
+#      order.x_done_amount = response['return']['received']
+#      order.x_rest_amount = response['return']['remains']
+#      
+#      order.run.pair
+#      order.x_base  = response['return']['funds'][]
+#      order.x_quote = response['return']['order_id']
+#      
+#      # Order was fully 'matched' if its id = 0
+#      order.status = (order.x_id == 0) ? 'executed' : 'active'
+#
+#      order.error  = nil
+#      order.save
+#      
+#      nil                                             # No error message returned
+#    end
+#  end
   
+  ##############################################################################
+  #  Calculates parameters of the *run* orders
+  ##############################################################################
   def set_orders run
     #####   Coefficients    #####
     kind      = set_kind(run.kind)                              # Sign for factors calculation
@@ -51,14 +155,14 @@ module OrdersPro
     factor    = 0    
 
     # Initialize Arrays
-    orders        = Array.new(run.orders_number)   # Array of orders hashes 
-    prices        = Array.new(run.orders_number)   # Array of orders prices
-    base_amounts  = Array.new(run.orders_number)   # Array of orders amounts in base  currency (e.g. BTC)
-    quote_amounts = Array.new(run.orders_number)   # Array of orders amounts in quote currency (e.g. USD)
-    fix_amounts   = Array.new(run.orders_number)   # Array of orders Fix amounts
-    fix_prices    = Array.new(run.orders_number)   # Array of orders Fix prices
+    orders        = Array.new(run.orders_number)    # Array of orders hashes 
+    prices        = Array.new(run.orders_number)    # Array of orders prices
+    base_amounts  = Array.new(run.orders_number)    # Array of orders amounts in base  currency (e.g. BTC)
+    quote_amounts = Array.new(run.orders_number)    # Array of orders amounts in quote currency (e.g. USD)
+    fix_amounts   = Array.new(run.orders_number)    # Array of orders Fix amounts
+    fix_prices    = Array.new(run.orders_number)    # Array of orders Fix prices
     wavg_amounts  = Array.new(run.orders_number) {Array.new(run.orders_number, 0)}  # Matrix of Weighted Average Amounts 
-    wavg_prices   = Array.new(run.orders_number, 0) # # Array of orders Weighted Average prices
+    wavg_prices   = Array.new(run.orders_number, 0) # Array of orders Weighted Average prices
     
     #####   Calculate order prices   #####
     if run.scale == 'linear'
@@ -105,6 +209,9 @@ module OrdersPro
     orders
   end
 
+  ##############################################################################
+  #  Sets *kind* value for orders calculation
+  ##############################################################################
   def set_kind kind
     kind == 'ask' ? -1 : 1
   end
@@ -168,7 +275,7 @@ module OrdersPro
   
   # Preliminary - to be tested
   def trace_order order
-    response = ZtBtce.order_info order_id: order.ex_id
+    response = ZtBtce.order_info order_id: order.x_id
     
     if response['success'] == 0                         # Error
       order.status = 'rejected'
@@ -179,7 +286,7 @@ module OrdersPro
       order.status = response['return']['status']
       order.error  = nil
       
-      if order.ex_id == 0           # Order was fully 'matched'
+      if order.x_id == 0           # Order was fully 'matched'
         order.status = 'executed'
       elsif
         order.status = 'active'

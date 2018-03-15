@@ -15,7 +15,7 @@
 #   profit     - in %:                          float
 #   scale      - order prices range scale:      enum { linear (0) | logarithmic (1) }
 #   stop_loss  - stop loss:                     decimal
-#   status     - Run status:                    enum { created (0) | active (1) | executed (2) | canceled (3) }
+#   status     - Run status:  enum {created (0) | active (1) | executed (2) | canceled (3))}
 #   
 #  16.01.2018   ZT
 #  27.02.2018   status updated & dependency added

@@ -40,3 +40,10 @@ end
 if Run.count == 0
   Run.create pair_id: 1, kind: "ask", depo: 0.1e4, last: 0.17061367e4, indent: 5.0, overlay: 10.0, martingale: 15.0, orders_number: 6, profit: 2.0, scale: "logarithmic", stop_loss: 0.8616e4
 end
+
+if FixOrder.count == 0
+  run = Run.first
+  order = run.orders.first
+  
+  FixOrder.create run_id: run.id, price: order.fix_price, amount: order.fix_amount
+end

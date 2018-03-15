@@ -9,11 +9,13 @@ class CreateFixOrders < ActiveRecord::Migration[5.2]
       t.string     :x_id
       t.string     :x_pair
       t.integer    :x_type,                                   limit: 1
-      t.decimal    :x_start_amount,  precision: 15, scale: 8
-      t.decimal    :x_amount,        precision: 15, scale: 8
+      t.decimal    :x_done_amount,   precision: 15, scale: 8
+      t.decimal    :x_rest_amount,   precision: 15, scale: 8
       t.decimal    :x_rate,          precision: 15, scale: 5
       t.integer    :x_timestamp
-      t.integer    :x_status,        null: false, default: 4, limit: 1  # default: nil
+      t.decimal    :x_base,          precision: 15, scale: 8
+      t.decimal    :x_quote,         precision: 15, scale: 5
+      t.integer    :x_status,                                  limit: 1
 
       t.timestamps
     end

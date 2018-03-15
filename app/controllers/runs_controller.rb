@@ -55,13 +55,45 @@ class RunsController < ApplicationController
   end
   
   def check_orders
-    run  = Run.find(params['id'])
-    puts "ZT! check_orders: #{run.inspect}"
-#    run.orders.each do |order|
-#      if order.active?
+    run            = Run.find(params['id'])
+    flash[:danger] = []
+    
+    run.orders.each do |order|
+      error_msg = check_order order
+      flash[:danger] << error_msg if error_msg.present?
+      
+#      response = ZtBtce.order_info order.x_id
+
+#      if response['success'] == 0                             # Error
+#        order.status = 'rejected'
+#        order.error  = response['error']
+#        order.save!
+#
+#        flash[:danger] << "Order #{order.id}: #{order.error}" # error message
 #        
+#      else
+#        order.x_timestamp = response['return']['timestamp_created']
+#
+#        # Just some verifications
+#        if order.amount == response['return']['start_amount'] && order.price == response['return']['rate'] 
+#          order.x_rest_amount = response['return']['amount']
+#          order.x_done_amount = response['return']['start_amount'] - order.x_rest_amount
+#          order.status        = response['return']['status']
+#          order.error         = nil
+#        else                      # Something went wrong
+#          order.status = 'wrong'
+#          order.error  = "Something went wrong: price = #{order['return']['rate']}; amount = #{['return']['start_amount']}"
+#        end
+#
+#        order.save! 
 #      end
-#    end
+    end
+    
+    if flash[:danger].empty?
+      flash.discard
+      flash[:success] = "Well done! Orders have been checked"
+    end
+
     redirect_to run
   end
   
@@ -77,15 +109,37 @@ class RunsController < ApplicationController
     
     redirect_to run
   end
-  
-  def index
-    @runs = Run.all
+
+  def create
+    @run = Run.new(run_params)
+    
+    respond_to do |format|
+      if @run.save
+        create_orders @run
+        flash[:success] = 'Run was successfully created'
+        format.html { redirect_to @run }
+        format.json { render :show, status: :created, location: @run }
+      else
+        format.html { render :new }
+        format.json { render json: @run.errors, status: :unprocessable_entity }
+      end
+    end
   end
 
-  def show
-    @orders     = @run.orders
-    @fix_orders = @run.fix_orders
-    gon.orders  = @orders.first
+  def destroy
+    @run.destroy
+    respond_to do |format|
+      flash[:alert] = 'Run was successfully destroyed'
+      format.html { redirect_to runs_url }
+      format.json { head :no_content }
+    end
+  end
+  
+  def edit
+  end
+
+  def index
+    @runs = Run.all
   end
 
   def new
@@ -124,30 +178,52 @@ class RunsController < ApplicationController
     gon.objects    = objects   
   end
 
-  # GET /runs/1/edit
-  def edit
-  end
-
-  # POST /runs
-  # POST /runs.json
-  def create
-    @run = Run.new(run_params)
+  ##############################################################################
+  # Places just created fix_order
+  # It must be ONE such a created order (all others should be cancelled before)
+  ##############################################################################
+  def place_fix_order
+    run       = Run.find(params['id'])
+    fix_order = run.fix_orders.created.first
     
-    respond_to do |format|
-      if @run.save
-        create_orders @run
-        flash[:success] = 'Run was successfully created'
-        format.html { redirect_to @run }
-        format.json { render :show, status: :created, location: @run }
-      else
-        format.html { render :new }
-        format.json { render json: @run.errors, status: :unprocessable_entity }
-      end
+    error_msg      = place_order fix_order, true
+    flash[:danger] = error_msg if error_msg.present?
+
+    if flash[:danger].empty?
+      flash.discard
+      flash[:success] = "Well done! Fix Order has been placed"
     end
+    
+    redirect_to run
+  end
+   
+  def place_orders
+    flash[:danger] = []
+    run            = Run.find(params['id'])
+    type = (run.kind == 'ask') ? 'sell' : 'buy'
+    
+    run.orders.each do |order|
+      error_msg = place_order order
+      flash[:danger] << error_msg if error_msg.present?
+    end
+    
+    if flash[:danger].empty?
+      run.status = 'active'
+      run.save!
+      
+      flash.discard
+      flash[:success] = "Well done! Orders have been placed"
+    end
+    
+    redirect_to run
   end
 
-  # PATCH/PUT /runs/1
-  # PATCH/PUT /runs/1.json
+  def show
+    @orders     = @run.orders
+    @fix_orders = @run.fix_orders
+    gon.orders  = @orders.first
+  end
+  
   def update
     respond_to do |format|
       if @run.update(run_params)
@@ -160,51 +236,6 @@ class RunsController < ApplicationController
         format.json { render json: @run.errors, status: :unprocessable_entity }
       end
     end
-  end
-
-  # DELETE /runs/1
-  # DELETE /runs/1.json
-  def destroy
-    @run.destroy
-    respond_to do |format|
-      flash[:alert] = 'Run was successfully destroyed'
-      format.html { redirect_to runs_url }
-      format.json { head :no_content }
-    end
-  end
-
-  # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
-  def place_orders
-    flash[:danger] = []
-    run  = Run.find(params['id'])
-    type = (run.kind == 'ask') ? 'sell' : 'buy'
-    
-    run.orders.each do |order|
-      response = ZtBtce.trade pair: run.pair.name, type: type, rate: order.price.round(3), amount: order.amount
-
-      if response['success'] == 0                       # Error
-        order.status = 'rejected'
-        order.error  = response['error']
-        order.save
-        flash[:danger] << "Order #{order.id}: #{order.error}"
-      else                                            # Order has been placed
-        order.ex_id = response['return']['order_id']
-
-        # Order was fully 'matched' if its id = 0
-        order.status = (order.ex_id == 0) ? 'executed' : 'active'
-        
-        order.error  = nil
-        order.save
-      end
-    end
-    
-    if flash[:danger].empty?
-      run.status = 'active'
-      run.save!
-      flash[:success] = "Well done"
-    end
-    
-    redirect_to run
   end
   
   private

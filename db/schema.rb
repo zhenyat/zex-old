@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_03_13_123854) do
+ActiveRecord::Schema.define(version: 2018_03_14_130844) do
 
   create_table "coins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -29,11 +29,13 @@ ActiveRecord::Schema.define(version: 2018_03_13_123854) do
     t.string "x_id"
     t.string "x_pair"
     t.integer "x_type", limit: 1
-    t.decimal "x_start_amount", precision: 15, scale: 8
-    t.decimal "x_amount", precision: 15, scale: 8
+    t.decimal "x_done_amount", precision: 15, scale: 8
+    t.decimal "x_rest_amount", precision: 15, scale: 8
     t.decimal "x_rate", precision: 15, scale: 5
     t.integer "x_timestamp"
-    t.integer "x_status", limit: 1, default: 4, null: false
+    t.decimal "x_base", precision: 15, scale: 8
+    t.decimal "x_quote", precision: 15, scale: 5
+    t.integer "x_status", limit: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["run_id"], name: "index_fix_orders_on_run_id"
@@ -51,11 +53,13 @@ ActiveRecord::Schema.define(version: 2018_03_13_123854) do
     t.string "x_id"
     t.string "x_pair"
     t.integer "x_type", limit: 1
-    t.decimal "x_start_amount", precision: 15, scale: 8
-    t.decimal "x_amount", precision: 15, scale: 8
+    t.decimal "x_done_amount", precision: 15, scale: 8
+    t.decimal "x_rest_amount", precision: 15, scale: 8
     t.decimal "x_rate", precision: 15, scale: 5
     t.integer "x_timestamp"
-    t.integer "x_status", limit: 1, default: 4, null: false
+    t.decimal "x_base", precision: 15, scale: 8
+    t.decimal "x_quote", precision: 15, scale: 5
+    t.integer "x_status", limit: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["run_id"], name: "index_orders_on_run_id"
