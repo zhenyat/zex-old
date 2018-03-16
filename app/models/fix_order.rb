@@ -4,7 +4,7 @@
 # Purpose:  Fix Order generated for Run 
 #
 # Run attributes:
-#   run        - Foreign key
+#   order      - Foreign key
 #   price      - Price to be sold /bought at:           decimal
 #   amount     - Amount to be sold /bought:             decimal
 #   error      - error message from the Server          string
@@ -22,10 +22,10 @@
 #   x_quote       - Fund of quote carrency:                              decimal
 #   x_status      - Order status:  enum {active (0)|executed (1)|canceled (2)|canceled_but_partly_executed (3)}
 #
-#  14.03.2018   ZT (revised version)
+#  15.03.2018   ZT (revised version)
 ###############################################################################
 class FixOrder < ApplicationRecord
-  belongs_to :run
+  belongs_to :order
   
   enum status:   %w(active executed canceled canc_partly_executed created rejected)
   enum x_type:   %w(sell buy)

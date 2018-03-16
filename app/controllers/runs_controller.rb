@@ -61,32 +61,6 @@ class RunsController < ApplicationController
     run.orders.each do |order|
       error_msg = check_order order
       flash[:danger] << error_msg if error_msg.present?
-      
-#      response = ZtBtce.order_info order.x_id
-
-#      if response['success'] == 0                             # Error
-#        order.status = 'rejected'
-#        order.error  = response['error']
-#        order.save!
-#
-#        flash[:danger] << "Order #{order.id}: #{order.error}" # error message
-#        
-#      else
-#        order.x_timestamp = response['return']['timestamp_created']
-#
-#        # Just some verifications
-#        if order.amount == response['return']['start_amount'] && order.price == response['return']['rate'] 
-#          order.x_rest_amount = response['return']['amount']
-#          order.x_done_amount = response['return']['start_amount'] - order.x_rest_amount
-#          order.status        = response['return']['status']
-#          order.error         = nil
-#        else                      # Something went wrong
-#          order.status = 'wrong'
-#          order.error  = "Something went wrong: price = #{order['return']['rate']}; amount = #{['return']['start_amount']}"
-#        end
-#
-#        order.save! 
-#      end
     end
     
     if flash[:danger].empty?
@@ -180,11 +154,11 @@ class RunsController < ApplicationController
 
   ##############################################################################
   # Places just created fix_order
-  # It must be ONE such a created order (all others should be cancelled before)
+  # It must be ONE such a created order (all others should be canceled before)
   ##############################################################################
   def place_fix_order
     run       = Run.find(params['id'])
-    fix_order = run.fix_orders.created.first
+    fix_order = FixOrder.created.first
     
     error_msg      = place_order fix_order, true
     flash[:danger] = error_msg if error_msg.present?
@@ -200,7 +174,6 @@ class RunsController < ApplicationController
   def place_orders
     flash[:danger] = []
     run            = Run.find(params['id'])
-    type = (run.kind == 'ask') ? 'sell' : 'buy'
     
     run.orders.each do |order|
       error_msg = place_order order
@@ -220,8 +193,12 @@ class RunsController < ApplicationController
 
   def show
     @orders     = @run.orders
-    @fix_orders = @run.fix_orders
-    gon.orders  = @orders.first
+    @fix_orders = []
+    
+    @orders.each do |order|
+      fix_order    = order.fix_order
+      @fix_orders << fix_order if fix_order.present?
+    end
   end
   
   def update
@@ -229,7 +206,7 @@ class RunsController < ApplicationController
       if @run.update(run_params)
         flash[:success] = 'Run was successfully updated'
         format.html { redirect_to @run }
-#        format.html { redirect_to @run, notice: 'Run was successfully updated.' } - obsolete
+#       format.html { redirect_to @run, notice: 'Run was successfully updated.' } - obsolete
         format.json { render :show, status: :ok, location: @run }
       else
         format.html { render :edit }

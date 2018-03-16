@@ -29,6 +29,7 @@
 ################################################################################
 class Order < ApplicationRecord
   belongs_to :run
+  has_one    :fix_order, dependent: :destroy
   
   enum status:   %w(active executed canceled canc_partly_executed created rejected wrong)
   enum x_type:   %w(sell buy)

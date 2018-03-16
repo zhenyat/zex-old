@@ -42,8 +42,11 @@ if Run.count == 0
 end
 
 if FixOrder.count == 0
-  run = Run.first
-  order = run.orders.first
+  run    = Run.first
+  o_type = (run.kind == 'ask') ? 'sell' : 'buy'
+  f_type = (run.kind == 'ask') ? 'buy'  : 'sell'
   
-  FixOrder.create run_id: run.id, price: order.fix_price, amount: order.fix_amount
+  order = run.orders.first
+  order.update x_id: 11223344, x_pair: order.run.pair.name, x_type: o_type, x_done_amount: order.amount, x_rest_amount: 0.0, x_rate: order.price, x_base: 0.0, x_quote: 0.0, x_timestamp: Time.now, status: 'executed', x_status: 'x_executed'
+  FixOrder.create order_id: order.id, price: order.fix_price, amount: order.fix_amount, x_id: 11667788, x_type: f_type
 end

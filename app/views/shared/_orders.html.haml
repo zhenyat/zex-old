@@ -24,5 +24,5 @@
             %td= number_to_currency order.fix_price,  precision: 3
             %td= order.fix_amount
             %td= order.status
-            - if order.active? && order.x_id.present? 
+            - if !order.created? && order.x_id.present? 
               %td= link_to 'More', "#", class: 'btn btn-sm btn-outline-dark btn-block', onclick: "alert('Order EX ID: ' + #{order.x_id} + \"\\nPair: \" + \"#{order.x_pair}\" + \"\\nType: \" + \"#{order.x_type}\" + \"\\nDone Amount: \" + #{order.x_done_amount} + \"\\nRest Amount: \" + #{order.x_rest_amount} + \"\\nRate: \" + #{order.x_rate} + \"\\nTimestamp: \" + #{order.x_timestamp} + \"\\nBase Fund: \" + #{order.x_base} + \"\\nQuote Fund: \" + #{order.x_quote} + \"\\nStatus: \" + \"#{order.x_status}\" + \"\\nError: \" + \"#{order.error}\")"

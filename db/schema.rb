@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_03_14_130844) do
+ActiveRecord::Schema.define(version: 2018_03_16_104430) do
 
   create_table "coins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -21,7 +21,7 @@ ActiveRecord::Schema.define(version: 2018_03_14_130844) do
   end
 
   create_table "fix_orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
-    t.bigint "run_id"
+    t.bigint "order_id"
     t.decimal "price", precision: 15, scale: 5
     t.decimal "amount", precision: 15, scale: 8
     t.string "error"
@@ -38,7 +38,7 @@ ActiveRecord::Schema.define(version: 2018_03_14_130844) do
     t.integer "x_status", limit: 1
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["run_id"], name: "index_fix_orders_on_run_id"
+    t.index ["order_id"], name: "index_fix_orders_on_order_id"
   end
 
   create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -113,7 +113,7 @@ ActiveRecord::Schema.define(version: 2018_03_14_130844) do
     t.index ["pair_id"], name: "index_trades_on_pair_id"
   end
 
-  add_foreign_key "fix_orders", "runs"
+  add_foreign_key "fix_orders", "orders"
   add_foreign_key "orders", "runs"
   add_foreign_key "runs", "pairs"
   add_foreign_key "trades", "pairs"

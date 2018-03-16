@@ -7,17 +7,25 @@
         %tr
           %th= 'ID'
           %th= 'EX ID'
+          %th= 'Order ID'
+          %th= 'Type'
           %th= 'Price'
           %th= 'Amount'
           %th= 'Status'
 
       %tbody
-        - @fix_orders.each do |order|
+        - @fix_orders.each do |fix_order|
           %tr
-            %td= order.id
-            %td= order.x_id
-            %td= number_to_currency order.price, precision: 3
-            %td= order.amount
-            %td= order.status
-            - if order.active? && order.x_id.present? 
-              %td= link_to 'More', "#", class: 'btn btn-sm btn-outline-dark btn-block', onclick: "alert('Order EX ID: ' + #{order.x_id} + \"\\nPair: \" + \"#{order.x_pair}\" + \"\\nType: \" + \"#{order.x_type}\" + \"\\nDone Amount: \" + #{order.x_done_amount} + \"\\nRest Amount: \" + #{order.x_rest_amount} + \"\\nRate: \" + #{order.x_rate} + \"\\nTimestamp: \" + #{order.x_timestamp} + \"\\nBase Fund: \" + #{order.x_base} + \"\\nQuote Fund: \" + #{order.x_quote} + \"\\nStatus: \" + \"#{order.x_status}\" + \"\\nError: \" + \"#{order.error}\")"
+            %td= fix_order.id
+            %td= fix_order.x_id
+            %td= fix_order.order.id
+            - if fix_order.x_type == 0
+              %td.ask= 'Sell'
+            - else
+              %td.bid= 'Buy'
+            %td= fix_order.x_type
+            %td= number_to_currency fix_order.price, precision: 3
+            %td= fix_order.amount
+            %td= fix_order.status
+            - if fix_order.active? && fix_order.x_id.present? 
+              %td= link_to 'More', "#", class: 'btn btn-sm btn-outline-dark btn-block', onclick: "alert('Order EX ID: ' + #{fix_order.x_id} + \"\\nPair: \" + \"#{fix_order.x_pair}\" + \"\\nType: \" + \"#{fix_order.x_type}\" + \"\\nDone Amount: \" + #{fix_order.x_done_amount} + \"\\nRest Amount: \" + #{fix_order.x_rest_amount} + \"\\nRate: \" + #{fix_order.x_rate} + \"\\nTimestamp: \" + #{fix_order.x_timestamp} + \"\\nBase Fund: \" + #{fix_order.x_base} + \"\\nQuote Fund: \" + #{fix_order.x_quote} + \"\\nStatus: \" + \"#{fix_order.x_status}\" + \"\\nError: \" + \"#{fix_order.error}\")"

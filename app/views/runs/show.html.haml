@@ -6,7 +6,10 @@
     .col-md-2
       = "Pair: #{@run.pair.code}"
     .col-md-2
-      = "Kind: #{@run.kind}"
+      - if @run.kind == 'ask'
+        .ask= "Kind: #{@run.kind}"
+      - else
+        .bid= "Kind: #{@run.kind}"
     .col-md-2
       = "Orders Number: #{@run.orders_number}"
     .col-md-2

@@ -59,10 +59,10 @@ module OrdersPro
   end
   
   ##############################################################################
-  # Creates Fix Order for the *run* after the last executed *order*
+  # Creates Fix Order for the Run after the last executed *order*
   ##############################################################################
-  def create_fix_order run, order
-      FixOrder.create run_id: run.id, price: order.fix_price, amount: order.fix_amount 
+  def create_fix_order order
+      FixOrder.create run_id: order.run.id, price: order.fix_price, amount: order.fix_amount 
   end
   
   # Creates all Orders for the Run
@@ -76,19 +76,21 @@ module OrdersPro
   end
 
   ##############################################################################
-  # Places *order* or *fix_order*
+  # Places *order* (fix = false) or *fix_order* (fix = true)
   # 
   # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
   ##############################################################################
   def place_order order, fix = false
-    run  = order.run
-    pair = run.pair.name
+
     if fix
-      type = (run.kind == 'ask') ? 'buy' : 'sell'  # opposite to Run's kind
+      run  = order.order.run                        #  FixOrder.Order.Run
+      type = (run.kind == 'ask') ? 'buy' : 'sell'   # opposite to Run's kind
     else
+      run  = order.run                              # Order.Run
       type = (run.kind == 'ask') ? 'sell' : 'buy'
     end
-    
+    pair = run.pair.name
+
     response = ZtBtce.trade pair: pair, type: type, rate: order.price.round(3), amount: order.amount
 
     if response['success'] == 0                             # Error

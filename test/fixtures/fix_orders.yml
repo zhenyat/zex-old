@@ -1,7 +1,7 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  run: one
+  order: one
   price: 9.99
   amount: 9.99
   error: MyString
@@ -18,7 +18,7 @@ one:
   x_status: 1
 
 two:
-  run: two
+  order: two
   price: 9.99
   amount: 9.99
   error: MyString

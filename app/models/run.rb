@@ -19,12 +19,10 @@
 #   
 #  16.01.2018   ZT
 #  27.02.2018   status updated & dependency added
-#  12.03.2018   fix orders
 ################################################################################
 class Run < ApplicationRecord
-  has_many   :orders,     dependent: :destroy 
-  has_many   :fix_orders, dependent: :destroy 
   belongs_to :pair
+  has_many   :orders,     dependent: :destroy 
   
   enum kind:   %w(ask bid)
   enum scale:  %w(linear logarithmic)
