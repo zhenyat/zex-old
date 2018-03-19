@@ -72,16 +72,23 @@ class RunsController < ApplicationController
   end
   
   def check_fix_orders
-    run  = Run.find(params['id'])
+    run            = Run.find(params['id'])
+    flash[:danger] = []
     
-    @fix_orders = run.fix_orders
-    if @fix_orders.present?
-      @fix_orders.each do |fix_order|
-        trace_order fix_order
+    run.orders.each do |order|
+      fix_order = order.fix_order
+      if fix_order.present?
+        error_msg = check_fix_order fix_order
+        flash[:danger] << error_msg if error_msg.present?
       end
+      
+      if flash[:danger].empty?
+        flash.discard
+        flash[:success] = "Well done! Orders have been checked"
+      end
+      
+      redirect_to run
     end
-    
-    redirect_to run
   end
 
   def create

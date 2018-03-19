@@ -12,11 +12,15 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/runs/show.html.haml</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/concerns/orders_pro.rb</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/runs_controller.rb</file>
             <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/shared/_fix_orders.html.haml</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/shared/_orders.html.haml</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/models/fix_order.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/assets/javascripts/selections.js</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/runs_controller.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/assets/javascripts/candlesticks.js</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/models/order.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/runs/show.html.haml</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/selections/charts.html.haml</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/concerns/orders_pro.rb</file>
         </group>
     </open-files>
 </project-private>

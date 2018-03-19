@@ -4,7 +4,6 @@
 #   19.02.2018  ZT
 #   06.03.2018  New methods (order cancellation)
 ################################################################################
-
 module OrdersPro
   extend ActiveSupport::Concern
   
@@ -28,11 +27,11 @@ module OrdersPro
   end
   
   ##############################################################################
-  # Checks *order*
+  # Checks *fix_order*
   # 
   # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
   ##############################################################################
-  def check_order order
+  def check_fix_order order
     puts "ZT! #{order.x_id}"
     response = ZtBtce.order_info order.x_id
 
@@ -55,7 +54,47 @@ module OrdersPro
     end
     
     order.save!
-    "Order #{order.id}: #{order.error}" if order.error.present?   # Return error message
+
+    if order.error.present?
+      "Order #{order.id}: #{order.error}"   # Return error message
+    else
+      nil
+    end
+  end
+  
+  ##############################################################################
+  # Checks *order*
+  # 
+  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
+  ##############################################################################
+  def check_order order
+    response = ZtBtce.order_info order.x_id
+
+    if response['success'] == 0                             # Error
+      order.status = 'rejected'
+      order.error  = response['error']
+    else
+      order.x_timestamp = response['return']['timestamp_created'] if order.x_timestamp.nil?
+
+      # Just some verifications
+      if order.amount == response['return']['start_amount'] && order.price == response['return']['rate'] 
+        order.x_rest_amount = response['return']['amount']
+        order.x_done_amount = response['return']['start_amount'] - order.x_rest_amount
+        order.status        = response['return']['status']
+        order.error         = nil
+      else                                                  # Something went wrong
+        order.status = 'wrong'
+        order.error  = "Something went wrong: price = #{order['return']['rate']}; amount = #{['return']['start_amount']}"
+      end 
+    end
+    
+    order.save!
+
+    if order.error.present?
+      "Order #{order.id}: #{order.error}"   # Return error message
+    else
+      nil
+    end
   end
   
   ##############################################################################
