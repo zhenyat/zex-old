@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_03_16_104430) do
+ActiveRecord::Schema.define(version: 2018_03_19_185906) do
 
   create_table "coins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -18,6 +18,16 @@ ActiveRecord::Schema.define(version: 2018_03_16_104430) do
     t.integer "status", limit: 1, default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "crono_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "job_id", null: false
+    t.text "log", limit: 4294967295
+    t.datetime "last_performed_at"
+    t.boolean "healthy"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
   end
 
   create_table "fix_orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

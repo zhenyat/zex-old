@@ -26,7 +26,7 @@ module DataPro
     trades = ZtBtce.trades pairs: pair.name, limit: limit  # Hash of deals for key 'pair'
 
     if trades.present?
-      deals = trades.values.first.reverse                   # new deals as a hash array (last - the latest tid) 
+      deals = trades.values.first.reverse                  # new deals as a hash array (last - the latest tid) 
       
       ### Save data 
       deals.each do |deal|
