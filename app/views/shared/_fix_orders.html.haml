@@ -1,7 +1,7 @@
 - if @fix_orders.present?
   .container-fluid
     %h
-    %h5 Fix Orders
+    %h4.text_muted Fix Orders
     %table.table.table-striped.table-hover
       %thead
         %tr
@@ -19,13 +19,13 @@
             %td= fix_order.id
             %td= fix_order.x_id
             %td= fix_order.order.id
-            - if fix_order.x_type == 0
+            - if fix_order.x_type == 'sell'
               %td.ask= 'Sell'
             - else
               %td.bid= 'Buy'
-            %td= fix_order.x_type
+            /%td= fix_order.x_type
             %td= number_to_currency fix_order.price, precision: 3
             %td= fix_order.amount
             %td= fix_order.status
-            - if fix_order.active? && fix_order.x_id.present? 
+            - if fix_order.x_id.present? 
               %td= link_to 'More', "#", class: 'btn btn-sm btn-outline-dark btn-block', onclick: "alert('Order EX ID: ' + #{fix_order.x_id} + \"\\nPair: \" + \"#{fix_order.x_pair}\" + \"\\nType: \" + \"#{fix_order.x_type}\" + \"\\nDone Amount: \" + #{fix_order.x_done_amount} + \"\\nRest Amount: \" + #{fix_order.x_rest_amount} + \"\\nRate: \" + #{fix_order.x_rate} + \"\\nTimestamp: \" + #{fix_order.x_timestamp} + \"\\nBase Fund: \" + #{fix_order.x_base} + \"\\nQuote Fund: \" + #{fix_order.x_quote} + \"\\nStatus: \" + \"#{fix_order.x_status}\" + \"\\nError: \" + \"#{fix_order.error}\")"

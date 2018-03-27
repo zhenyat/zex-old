@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   get  'trades/update_cash'
 
   resources :runs do
-    get :cancel_orders,     on: :member
+    get :cancel,            on: :member
     get :check_orders,      on: :member
     get :place_orders,      on: :member
     

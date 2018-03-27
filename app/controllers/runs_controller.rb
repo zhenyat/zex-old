@@ -1,64 +1,58 @@
 class RunsController < ApplicationController
   include DataPro
   include OrdersPro
+  include AccountPro
   
-  before_action :set_run, only: [:show, :edit, :update, :destroy]
+  before_action :set_run, only: [:show, :edit, :update, :destroy, :cancel, :check_fix_orders, :check_orders, :place_orders]
 
-  def cancel_run
-    
-  end
-  
-  # Cancel all Run's non-closed yet Orders 
-  def cancel_orders
-    run           = Run.find(params['id'])
-    orders_active = run.orders.active
-    
-    if orders_active.present?
-      orders_active.each do |order|
-        cancel_order order
-    end
-
-    # Need to create Fix Order
-    fix_order            = Order.new
-    fix_order.run_id     = run.id
-    fix_order.amount     = 0.0
-    fix_order.wavg_price = nil
-    fix_order.fix_price  = nil
-    
-    # Canceled or executed partly order - gets its Fix
-    orders_canc_or_exec_part = run.orders.canc_or_exec_part
-    if orders_canc_or_exec_part.present?
-      canc_order = orders_canc_or_exec_part.first
-
-      fix_order.price  = canc_order.fix_price
-      fix_order.amount = canc_order.amount
-    end
-
-      
-#      amount = order_exec_part * 
-
-      
-      place_fix_order run, executed_order
-    end
-     
-    if order_exec_part.nil?
-      order_last_exec = orders.find_by("status = ?", 'executed').order(:id).last
-      if order_last_exec.nil?
-        
-      end
-    end
-    orders.reverse.each_with_index do |order, index|
-      if order.status == 'executed' || order.status == 'cxnd_or_exec_part'
-      end
-    end
-    
-  end
-  
-  def check_orders
-    run            = Run.find(params['id'])
+  ################################################################################
+  #   Run cancelation:
+  #     - cancels all active Orders
+  #     - cancels active Fix Order if exists
+  #     - cancels the run
+  #   No new Fix Order is screated
+  ################################################################################
+  def cancel
     flash[:danger] = []
     
-    run.orders.each do |order|
+    # Cancel orders
+    @run.orders.each do |order|
+      error_msg = cancel_order order
+      flash[:danger] << error_msg if error_msg.present?
+ 
+      error_msg = check_order order                     # Check final Order status now
+      flash[:danger] << error_msg if error_msg.present?
+    end
+    
+    # Cancel Fix Order
+    if flash[:danger].empty?
+      active_fix_order = @run.orders.executed.last.fix_order
+      
+      if active_fix_order.present? and active_fix_order.active?
+        error_msg = cancel_order active_fix_order
+        flash[:danger] << error_msg if error_msg.present?
+
+        error_msg = check_fix_order active_fix_order      # Check final Fix Order status now
+        flash[:danger] << error_msg if error_msg.present?
+      end
+    end
+
+    # Cancel Run
+    if flash[:danger].empty?
+      @run.update! status: 'canceled'
+      
+      flash.discard
+      flash[:success] = "Well done! Runs has been canceled"
+    end
+
+    redirect_to @run    
+  end
+
+  
+  def check_orders
+    flash[:danger] = []
+    
+    @run.orders.each do |order|
       error_msg = check_order order
       flash[:danger] << error_msg if error_msg.present?
     end
@@ -68,14 +62,13 @@ class RunsController < ApplicationController
       flash[:success] = "Well done! Orders have been checked"
     end
 
-    redirect_to run
+    redirect_to @run
   end
   
   def check_fix_orders
-    run            = Run.find(params['id'])
     flash[:danger] = []
     
-    run.orders.each do |order|
+    @run.orders.each do |order|
       fix_order = order.fix_order
       if fix_order.present?
         error_msg = check_fix_order fix_order
@@ -84,10 +77,10 @@ class RunsController < ApplicationController
       
       if flash[:danger].empty?
         flash.discard
-        flash[:success] = "Well done! Orders have been checked"
+        flash[:success] = "Well done! Fix Orders have been checked"
       end
       
-      redirect_to run
+      redirect_to @run
     end
   end
 
@@ -95,15 +88,15 @@ class RunsController < ApplicationController
     @run = Run.new(run_params)
     
     respond_to do |format|
-      if @run.save
+#      if @run.save
         create_orders @run
         flash[:success] = 'Run was successfully created'
         format.html { redirect_to @run }
         format.json { render :show, status: :created, location: @run }
-      else
+#      else
         format.html { render :new }
         format.json { render json: @run.errors, status: :unprocessable_entity }
-      end
+#      end
     end
   end
 
@@ -125,6 +118,7 @@ class RunsController < ApplicationController
 
   def new
     @run = Run.new
+    @account_data  = get_account_data
     
     # Update Tickers
     @pair_names = []
@@ -172,33 +166,37 @@ class RunsController < ApplicationController
 
     if flash[:danger].empty?
       flash.discard
-      flash[:success] = "Well done! Fix Order has been placed"
-    end
-    
-    redirect_to run
-  end
-   
-  def place_orders
-    flash[:danger] = []
-    run            = Run.find(params['id'])
-    
-    run.orders.each do |order|
-      error_msg = place_order order
-      flash[:danger] << error_msg if error_msg.present?
-    end
-    
-    if flash[:danger].empty?
-      run.status = 'active'
-      run.save!
-      
-      flash.discard
-      flash[:success] = "Well done! Orders have been placed"
+      flash[:success] = "Well done! Fix Order #{fix_order.id} (#{fix_order.x_id}) has been placed"
     end
     
     redirect_to run
   end
 
+  ##############################################################################
+  # Places created Run orders
+  ##############################################################################
+  def place_orders
+    flash[:danger] = []
+    
+    @run.orders.each do |order|
+      error_msg = place_order order
+      flash[:danger] << error_msg if error_msg.present?
+    end
+    
+    if flash[:danger].empty?
+      @run.update! status: 'active'
+      
+      flash.discard
+      flash[:success] = "Well done! Orders have been placed"
+    end
+    
+    redirect_to @run
+  end
+  
   def show
+    @account_data  = get_account_data
+#    @active_orders = ZtBtce.active_orders
+    
     @orders     = @run.orders
     @fix_orders = []
     

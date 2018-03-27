@@ -1,0 +1,12 @@
+- if @account_data.present?
+  .container-fluid
+    %h4.text-muted Account Data
+    .row
+      .col-md-1.text-muted
+        %h5 Balance:
+      - @account_data['funds'].each do |key, value|
+        .col-md-1
+          = "#{key}: #{value}"
+    .row
+      .col-md-2
+        = "Open Orders: #{@account_data['open_orders']}"

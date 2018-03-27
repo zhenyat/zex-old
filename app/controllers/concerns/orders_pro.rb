@@ -8,21 +8,48 @@ module OrdersPro
   extend ActiveSupport::Concern
   
   ##############################################################################
-  # Cancel the *order*
+  # Cancels the *order*
+  # Returns error message or nil
   ##############################################################################
   def cancel_order order
-    response  = ZtBtce.cancel_order order_id: order.x_id
+    if order.x_id.nil?
+      order.error  = "Can't be canceled without EX ID"
+      order.status = 'wrong'
+    else
+      response  = ZtBtce.cancel_order order_id: order.x_id
+
+      if order.x_id == response['return']['order_id']   # be on the safe side
+        pair_name     = order.run.pair.name
+        order.x_base  = response['return']['funds'][pair_name.split('_').first]
+        order.x_quote = response['return']['funds'][pair_name.split('_').first]
+        order.error   = nil
+        order.status  = 'canceled'
+      else                                            # Something went wrong
+        order.error  = "EX_ID #{order.x_id} mismatched to WEX_ID #{response['return']['order_id']}"
+        order.status = 'wrong'
+      end
+    end
+    
+    order.save!
+    if order.error.present?
+      "Order #{order.id}: #{order.error}"      # Return error message 
+    else
+      nil
+    end
+  end
   
-    error_msg = handle_response order, response
+  ##############################################################################
+  # Cancels all Run's active Orders including Fix Order if any
+  ##############################################################################
+  def cancel_orders run
+    orders_active = run.orders.active
     
-    flash[:danger] = error_msg if error_msg.present? 
-    
-    if flash[:danger].empty?
-      run.status = 'active'
-      run.save!
-      
-      flash.discard
-      flash[:success] = "Well done! Orders have been placed"
+    if orders_active.present?
+      orders_active.each do |order|
+        fix_order = order.fix_order
+        cancel_order fix_order if fix_order.active?
+        cancel_order order
+      end
     end
   end
   
@@ -107,6 +134,7 @@ module OrdersPro
   # Creates all Orders for the Run
   def create_orders run
     orders = set_orders run
+    
     for i in 0...run.orders_number
       Order.create run_id:    run.id,                      price: orders[i]['price'], 
                    amount:    orders[i]['amount'],    wavg_price: orders[i]['wavg_price'], 
@@ -122,15 +150,15 @@ module OrdersPro
   def place_order order, fix = false
 
     if fix
-      run  = order.order.run                        #  FixOrder.Order.Run
+      run  = order.order.run                        # FixOrder.Order.Run
       type = (run.kind == 'ask') ? 'buy' : 'sell'   # opposite to Run's kind
     else
       run  = order.run                              # Order.Run
       type = (run.kind == 'ask') ? 'sell' : 'buy'
     end
-    pair = run.pair.name
-
-    response = ZtBtce.trade pair: pair, type: type, rate: order.price.round(3), amount: order.amount
+    
+    pair_name = run.pair.name
+    response  = ZtBtce.trade pair: pair_name, type: type, rate: order.price.round(3), amount: order.amount
 
     if response['success'] == 0                             # Error
       order.status = 'rejected'
@@ -140,14 +168,16 @@ module OrdersPro
       order.x_done_amount = response['return']['received']
       order.x_rest_amount = response['return']['remains']
 
-      pair_name     = order.run.pair.name
       order.x_base  = response['return']['funds'][pair_name.split('_').first]
       order.x_quote = response['return']['funds'][pair_name.split('_').first]
 
-      # Order was fully 'matched' if its id = 0
-      order.status = (order.x_id == 0) ? 'executed' : 'active'
-
-      order.error  = nil
+      if order.x_id == 0          # Order was fully 'matched' if its id = 0
+        order.status = 'rejected'
+        order.error  = "Order was fully 'matched'"
+      else
+        order.status = 'active'
+        order.error  = nil
+      end
     end
 
     order.save!
@@ -246,7 +276,8 @@ module OrdersPro
       order['fix_amount'] = fix_amounts[i]
       orders[i] = order
     end
-    
+    puts "ZT! #{orders}"
+    exit(0)
     orders
   end
 
@@ -334,6 +365,30 @@ module OrdersPro
       end
     end
     order.save
+  end
+  
+  ##############################################################################
+  # Validates order attributes:
+  #   If *sell* base validate its amount
+  #   If *buy* base validate quote prices
+  ##############################################################################
+  def valid? order
+    run  = order.run.pair
+    pair = run.pair
+    
+    if run.kind == 'ask'
+      if order.amount < pair.min_amount   
+        false
+      else
+        true
+      end
+    else
+      if order.price < pair.min_price or order.price > pair.max_price
+        false
+      else
+        true
+      end
+    end
   end
 end
 

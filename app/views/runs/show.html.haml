@@ -1,7 +1,7 @@
 .container-fluid
   %div= render 'shared/flash_messages'
 
-  %h5= "Run (ID = #{@run.id})"
+  %h3.text-muted= "Run (ID = #{@run.id})"
   .row
     .col-md-2
       = "Pair: #{@run.pair.code}"
@@ -40,18 +40,25 @@
   %hr
   .form-actions
     .row
-      .col-md-1
-        = link_to 'Edit', edit_run_path(@run), class: 'btn btn-sm btn-primary btn-block'
+      -#.col-md-1
+        = link_to 'Edit', edit_run_path(@run), class: 'btn btn-sm btn-warning btn-block'
       .col-md-1
         = link_to 'Back', runs_path, class: 'btn btn-sm btn-secondary btn-block'
 
-      .col-md-1.offset-md-2
-        = link_to 'Place Orders', place_orders_run_path, class: 'btn btn-sm btn-info btn-block'
+      .col-md-1.offset-md-1
+        = link_to 'Place Orders', place_orders_run_path, class: 'btn btn-sm btn-primary btn-block'
       - if !@run.created?
         .col-md-1
-          = link_to 'Check Orders', check_orders_run_path, class: 'btn btn-sm btn-info btn-block'
+          = link_to 'Check Orders', check_orders_run_path, class: 'btn btn-sm btn-primary btn-block'
       - if @fix_orders.present?
-        .col-md-2.offset-md-1
-          = link_to 'Place Fix Order', place_fix_order_run_path, class: 'btn btn-sm btn-warning btn-block'
-        .col-md-2
-          = link_to 'Check Fix Orders', check_fix_orders_run_path, class: 'btn btn-sm btn-warning btn-block'
+        .col-md-1.offset-md-1
+          = link_to 'Place Fix', place_fix_order_run_path, class: 'btn btn-sm btn-info btn-block'
+        .col-md-1
+          = link_to 'Check Fixes', check_fix_orders_run_path, class: 'btn btn-sm btn-info btn-block'
+      - if @run.active?
+        .col-md-1.offset-md-2
+          = link_to 'Cancel Run', cancel_run_path, class: 'btn btn-sm btn-danger btn-block', data: { confirm: 'Are you sure?' }
+
+  %hr
+  %div= render 'shared/account'
+  %hr

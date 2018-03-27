@@ -1,5 +1,8 @@
 = include_gon(:init => true)
+%div= render 'shared/account'
+%hr
 %div= render 'shared/tickers'
+%hr
 
 = simple_form_for(@run) do |f|
   = f.error_notification
