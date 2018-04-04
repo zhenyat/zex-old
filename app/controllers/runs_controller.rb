@@ -88,15 +88,15 @@ class RunsController < ApplicationController
     @run = Run.new(run_params)
     
     respond_to do |format|
-#      if @run.save
+      if @run.save
         create_orders @run
         flash[:success] = 'Run was successfully created'
         format.html { redirect_to @run }
         format.json { render :show, status: :created, location: @run }
-#      else
+      else
         format.html { render :new }
         format.json { render json: @run.errors, status: :unprocessable_entity }
-#      end
+      end
     end
   end
 

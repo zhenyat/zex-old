@@ -106,6 +106,7 @@ tmp\:pids\:clear=
 tmp\:screenshots\:clear=
 tmp\:sockets\:clear=
 webpacker=Lists all available tasks in Webpacker
+webpacker\:binstubs=Installs Webpacker binstubs in this application
 webpacker\:check_binstubs=Verifies that webpack & webpack-dev-server are present.
 webpacker\:check_node=Verifies if Node.js is installed
 webpacker\:check_yarn=Verifies if Yarn is installed

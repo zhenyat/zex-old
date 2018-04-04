@@ -219,10 +219,10 @@ module OrdersPro
   ##############################################################################
   def set_orders run
     #####   Coefficients    #####
-    kind      = set_kind(run.kind)                              # Sign for factors calculation
-    m_factor  = 1.0 + kind * run.martingale / 100.0             # Martingale factor
-    pf        = (run.profit + 2.0 * run.pair.fee) / run.orders_number  # (Profit + 2*Fee) / orders (%)
-    pf_factor = 1.0 + kind * pf / 100.0                         # profit & Fee factor for ONE order
+    kind      = set_kind(run.kind)                                    # Sign for factors calculation
+    m_factor  = 1.0 + kind * run.martingale / 100.0                   # Martingale factor
+    pf        = (run.profit + 2.0 * run.pair.fee) / run.orders_number # (Profit + 2*Fee) / orders (%)
+    pf_factor = 1.0 + kind * pf / 100.0                               # profit & Fee factor for ONE order
     factor    = 0    
 
     # Initialize Arrays
@@ -276,8 +276,6 @@ module OrdersPro
       order['fix_amount'] = fix_amounts[i]
       orders[i] = order
     end
-    puts "ZT! #{orders}"
-    exit(0)
     orders
   end
 
@@ -334,8 +332,8 @@ module OrdersPro
     prices             = []
     kind               = set_kind(run.kind)
     increments         = run.orders_number - 1
-    prices[0]          = run.last     * (1.0 - kind * run.indent  / 100.0)
-    prices[increments] = prices.first * (1.0 - kind * run.overlay / 100.0)
+    prices[0]          = run.last     * (1.0 + kind * run.indent  / 100.0)
+    prices[increments] = prices.first * (1.0 + kind * run.overlay / 100.0)
     increment          = (prices.last - prices.first) / increments
 
     for i in (1..run.orders_number)
@@ -377,7 +375,7 @@ module OrdersPro
     pair = run.pair
     
     if run.kind == 'ask'
-      if order.amount < pair.min_amount   
+      if order.amount >= pair.min_amount #and order.amount 
         false
       else
         true
