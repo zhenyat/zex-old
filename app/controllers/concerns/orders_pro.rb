@@ -59,7 +59,6 @@ module OrdersPro
   # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
   ##############################################################################
   def check_fix_order order
-    puts "ZT! #{order.x_id}"
     response = ZtBtce.order_info order.x_id
 
     if response['success'] == 0                             # Error
@@ -151,10 +150,10 @@ module OrdersPro
 
     if fix
       run  = order.order.run                        # FixOrder.Order.Run
-      type = (run.kind == 'ask') ? 'buy' : 'sell'   # opposite to Run's kind
+      type = (run.kind == 'buy') ? 'buy' : 'sell'   # opposite to Run's kind
     else
       run  = order.run                              # Order.Run
-      type = (run.kind == 'ask') ? 'sell' : 'buy'
+      type = (run.kind == 'sell') ? 'sell' : 'buy'
     end
     
     pair_name = run.pair.name
@@ -213,7 +212,25 @@ module OrdersPro
 #      nil                                             # No error message returned
 #    end
 #  end
-  
+
+  ##############################################################################
+  #  Creates prices array and calculates first and last elements
+  ##############################################################################
+  def initiate_prices run
+    prices     = Array.new(run.orders_number - 1)
+    kind       = set_kind(run.kind)
+    prices[0]  = run.last     * (1.0 - kind * run.indent  / 100.0)
+    prices[-1] = prices.first * (1.0 - kind * run.overlap / 100.0)
+    return prices
+  end
+    
+  ##############################################################################
+  #  Sets *kind* value for orders calculation
+  ##############################################################################
+  def set_kind kind
+    kind == 'sell' ? -1 : 1
+  end
+
   ##############################################################################
   #  Calculates parameters of the *run* orders
   ##############################################################################
@@ -237,9 +254,9 @@ module OrdersPro
     
     #####   Calculate order prices   #####
     if run.scale == 'linear'
-      prices = set_plain_prices run
+      prices = set_prices_linear run
     else
-      prices = set_logarithmic_prices run
+      prices = set_prices_pseudo_logarithmic run
     end
 
     #####   Calculate order amounts   #####
@@ -280,66 +297,47 @@ module OrdersPro
   end
 
   ##############################################################################
-  #  Sets *kind* value for orders calculation
+  #  Generates orders prices with linear scale:
+  #   price[i] = price[i-1] + diff
+  #   n - orders_number
   ##############################################################################
-  def set_kind kind
-    kind == 'ask' ? -1 : 1
-  end
+  def set_prices_linear run
+    prices = initiate_prices(run)
+    diff   = (prices.last - prices.first) / (run.orders_number - 1)
 
-  # TYhis is for testing only
-  def set_logarithmic_prices run
-#    prices = Array.new(run.orders_number)
-    [1535.523, 1519.899, 1500.775, 1476.121, 1441.373, 1381.971]
-  end
-
-  def set_logarithmic_prices_new run
-    prices             = []
-    kind               = set_kind(run.kind)
-    increments         = run.orders_number - 1
-    prices[0]          = run.last     * (1.0 - kind * run.indent  / 100.0)
-    prices[increments] = prices.first * (1.0 - kind * run.overlay / 100.0)
- 
-    if run.kind == 'bid'
-      prices[0], prices[-1] = prices[-1], prices[0]   # swap first & last (must be increased order)
-    end
-   
-    # values for calculation
-    x1_min     = prices.first
-    x1_max     = prices.last
-    log_x1_min = Math.log10(x1_min)
-    lod_diff   = Math.log10(x1_max / x1_min)
-    
-    x2_min     = 1
-    x2_max     = 10
-    x2_diff    = x2_max - x2_min
-    fraction   = 0.4              # Empirical value
-    x2         = x2_min           # initial value (for price.first)
-
-    for i in 1...increments   # excluding first & last
-      x2        = (x2_max - x2) * fraction + x2
-      power     = log_x1_min + lod_diff / x2_diff * (x2 - x2_min)
-      prices[i] = 10**power
-    end
-    
-    if run.kind == 'bid'
-      prices.reverse!
+    for i in (1...run.orders_number)
+      prices[i] = prices[i-1] + diff
     end
     
     prices
   end
-  
-  def set_plain_prices run
-    prices             = []
-    kind               = set_kind(run.kind)
-    increments         = run.orders_number - 1
-    prices[0]          = run.last     * (1.0 + kind * run.indent  / 100.0)
-    prices[increments] = prices.first * (1.0 + kind * run.overlay / 100.0)
-    increment          = (prices.last - prices.first) / increments
 
-    for i in (1..run.orders_number)
-      prices[i] = prices[i-1] + increment
-    end
+  # This is for testing only
+  def set_prices_logarithmic_test run
+#    prices = Array.new(run.orders_number)
+    [1535.523, 1519.899, 1500.775, 1476.121, 1441.373, 1381.971]
+  end
+  
+  
+  def set_prices_logarithmic run
+    prices = initiate_prices(run)
     
+  end
+  
+  ##############################################################################
+  #  Generates orders prices with pseudo-logarithmic scale:
+  #  price[i] = price[i-1] * i * diff
+  #  where diff = (price_max - price_min) / sum_of arithmetic_progression
+  #        sum_of arithmetic_progression = (0+(n-1))/2 *n = n*(n-1)/2
+  #        n - orders_number
+  ##############################################################################
+  def set_prices_pseudo_logarithmic run
+    prices = initiate_prices(run)
+    arithm_progr_sum = run.orders_number * (run.orders_number - 1) / 2.0    # sum = n/2*(n-1)
+    elemenrtary_diff = (prices.last - prices.first) / arithm_progr_sum
+    for i in 1...run.orders_number
+      prices[i] = prices[i-1] + elemenrtary_diff * i
+    end
     prices
   end
   

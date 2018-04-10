@@ -16,7 +16,7 @@
 #   Ex Order values (if nil - not placed yet):
 #   x_id          - Order ID assigned at the stockEx:                    string
 #   x_pair        - Pair on which the order was created:                 string
-#   x_type        - Order type:                                          eenum {buy | sell}
+#   x_type        - Order type:                                          enum {buy | sell}
 #   x_done_amount - The amount of currency bought/sold:                  decimal
 #   x_amount      - The remaining amount of currency to be bought/sold:  decimal
 #   x_rate        - Sell/Buy price:                                      decimal

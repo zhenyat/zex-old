@@ -1,7 +1,8 @@
 ################################################################################
 # Account data Processing module
 #
-#   26.03.2018  
+#   26.03.2018
+#   09.04.2018  Corrected (output is a hash)
 ################################################################################
 module AccountPro
   extend ActiveSupport::Concern
@@ -19,12 +20,15 @@ module AccountPro
       coins << pair.base.code.downcase
       coins << pair.quote.code.downcase
     end
-    
+
     coins.uniq!
     coins.each do |coin|
       data['funds'][coin]  = response['return']['funds'][coin]
     end
-    data['funds'] = data['funds'].sort
+
+    data['funds'] = Hash[data['funds'].sort_by {|key, value| key}]  # Sorting by coin
+    data['funds']['usd'] = 200.0
+    data['funds']['bch'] = 10
     data
   end
 end

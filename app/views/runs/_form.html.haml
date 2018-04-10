@@ -15,7 +15,7 @@
     .col-md-2
       .form-inputs
         = f.input :kind, input_html: {onchange: "changeStopLoss()"}
-        = f.input :overlay
+        = f.input :overlap
         = f.input :profit
     .col-md-2
       .form-inputs
@@ -27,6 +27,9 @@
         = f.input :stop_loss
         = f.input :orders_number
         /= f.input :status
+  
+  /= render 'shared/validation_errors'
+
   %br
   .form_actions
     .row

@@ -5,11 +5,11 @@
 #
 # Run attributes:
 #   pair       - Foreign key
-#   kind       - strategy type:                 enum { ask (sell) (0) | bid (buy) (1) }
+#   kind       - strategy type:                 enum { sell (ask) (0) | buy (bid) (1) }
 #   depo       - amount to be applied for Run:  decimal
 #   last       - last closed trade price:       decimal
 #   indent     - price step to first order, %0: float
-#   overlay    - price overlay (last_order - first_order) %:   float
+#   overlap    - price overlap (last_order - first_order) %:   float
 #   martingale -  in %:                         float
 #   orders     - number of orders:              integer
 #   profit     - in %:                          float
@@ -19,14 +19,16 @@
 #   
 #  16.01.2018   ZT
 #  27.02.2018   status updated & dependency added
+#  08.04.2018   New version of many things
 ################################################################################
 class Run < ApplicationRecord
   belongs_to :pair
   has_many   :orders,     dependent: :destroy 
   
-  enum kind:   %w(ask bid)
+  enum kind:   %w(sell buy)
   enum scale:  %w(linear logarithmic)
   enum status: %w(created active executed canceled)
   
   validates :depo, presence: true
+  validates_with FundsValidator
 end

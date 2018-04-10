@@ -1,41 +1,46 @@
-%h1 Listing pairs
+.container-fluid
+  %h1 Listing pairs
 
-%table
-  %thead
-    %tr
-      %th Base
-      %th Quote
-      %th Name
-      %th Code
-      %th Decimal places
-      %th Min price
-      %th Max price
-      %th Min amount
-      %th Hidden
-      %th Fee
-      %th Status
-      %th
-      %th
-      %th
-
-  %tbody
-    - @pairs.each do |pair|
+  %table.table.table-hover
+    %thead
       %tr
-        %td= pair.base_id
-        %td= pair.quote_id
-        %td= pair.name
-        %td= pair.code
-        %td= pair.decimal_places
-        %td= pair.min_price
-        %td= pair.max_price
-        %td= pair.min_amount
-        %td= pair.hidden
-        %td= pair.fee
-        %td= pair.status
-        %td= link_to 'Show', pair
-        %td= link_to 'Edit', edit_pair_path(pair)
-        %td= link_to 'Destroy', pair, method: :delete, data: { confirm: 'Are you sure?' }
+        %th Base
+        %th Quote
+        %th Name
+        %th Code
+        %th Decimal places
+        %th Min price
+        %th Max price
+        %th Min amount
+        %th Hidden
+        %th Fee
+        %th Status
+        %th
+        %th
+        %th
 
-%br
+    %tbody
+      - @pairs.each do |pair|
+        %tr
+          %td= pair.base_id
+          %td= pair.quote_id
+          %td= pair.name
+          %td= pair.code
+          %td= pair.decimal_places
+          %td= pair.min_price
+          %td= pair.max_price
+          %td= pair.min_amount
+          %td= pair.hidden
+          %td= pair.fee
+          - if pair.active?
+            %td.bid.font-weight-bold= pair.status
+          - else
+            %td= pair.status
+          %td= pair.status
+          %td= link_to 'Show', pair
+          %td= link_to 'Edit', edit_pair_path(pair)
+          %td= link_to 'Destroy', pair, method: :delete, data: { confirm: 'Are you sure?' }
+
+  %br
 
 = link_to 'New Pair', new_pair_path

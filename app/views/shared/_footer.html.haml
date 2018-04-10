@@ -1,0 +1,7 @@
+%footer
+  .container
+    %hr
+      -#.row
+        .col-md-offset-1.col-md-6.vcenter
+          = "© #{app_name}, #{Time.now.year}"
+    = render 'shared/debug' if ZT_DEBUG

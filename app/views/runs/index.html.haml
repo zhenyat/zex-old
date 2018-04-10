@@ -24,11 +24,15 @@
       - @runs.each do |run|
         %tr
           %td= run.pair.name
-          %td= run.kind
+          - if run.kind == 'sell'
+            %td.ask= run.kind
+          - else
+            %td.bid= run.kind
+
           %td= run.depo
           %td= run.last
           %td= run.indent
-          %td= run.overlay
+          %td= run.overlap
           %td= run.martingale
           %td= run.orders_number
           %td= run.profit

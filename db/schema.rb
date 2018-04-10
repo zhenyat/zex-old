@@ -98,12 +98,12 @@ ActiveRecord::Schema.define(version: 2018_03_19_185906) do
     t.integer "kind", limit: 1, default: 0, null: false
     t.decimal "depo", precision: 15, scale: 5, null: false
     t.decimal "last", precision: 15, scale: 5, null: false
-    t.float "indent", default: 5.0, null: false
-    t.float "overlay", default: 10.0, null: false
+    t.float "indent", default: 10.0, null: false
+    t.float "overlap", default: 10.0, null: false
     t.float "martingale", default: 15.0, null: false
-    t.integer "orders_number", default: 6, null: false
-    t.float "profit", default: 2.0, null: false
-    t.integer "scale", limit: 1, default: 0, null: false
+    t.integer "orders_number", default: 10, null: false
+    t.float "profit", default: 1.0, null: false
+    t.integer "scale", limit: 1, default: 1, null: false
     t.decimal "stop_loss", precision: 15, scale: 5, null: false
     t.integer "status", limit: 1, default: 0, null: false
     t.datetime "created_at", null: false

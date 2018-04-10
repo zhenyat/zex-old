@@ -1,0 +1,5 @@
+%br
+-# if !@run.valid?
+  - @run.errors[:depo].each do |error|
+    %p= "#{error}"
+  /%div{:class => "alert= "}= "#{@run.errors[:base]}"

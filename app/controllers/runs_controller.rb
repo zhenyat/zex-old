@@ -4,7 +4,8 @@ class RunsController < ApplicationController
   include AccountPro
   
   before_action :set_run, only: [:show, :edit, :update, :destroy, :cancel, :check_fix_orders, :check_orders, :place_orders]
-
+  before_action :get_data, only: [:create, :new, :show]
+  
   ################################################################################
   #   Run cancelation:
   #     - cancels all active Orders
@@ -86,7 +87,7 @@ class RunsController < ApplicationController
 
   def create
     @run = Run.new(run_params)
-    
+#    @account_data  = get_account_data
     respond_to do |format|
       if @run.save
         create_orders @run
@@ -118,17 +119,17 @@ class RunsController < ApplicationController
 
   def new
     @run = Run.new
-    @account_data  = get_account_data
+#    @account_data  = get_account_data
     
     # Update Tickers
-    @pair_names = []
-    @tickers    = []
-    
-    Pair.active.order(:name).each do |pair|
-      pair_name = pair.name
-      @pair_names[pair.id] = pair_name
-      @tickers << get_ticker(pair_name)#[pair_name]
-    end
+#    @pair_names = []
+#    @tickers    = []
+#    
+#    Pair.active.order(:name).each do |pair|
+#      pair_name = pair.name
+#      @pair_names[pair.id] = pair_name
+#      @tickers << get_ticker(pair_name)#[pair_name]
+#    end
     
     # Data for JS functions
     objects = []              # array of ticker SINGLE hashes
@@ -144,9 +145,9 @@ class RunsController < ApplicationController
       @run.last = object['last'] if object['pair'] == @run.pair.name
     end
     if @run.kind == 'ask'
-      @run.stop_loss = @run.last * (1. - @run.overlay * 2 / 100.0)
+      @run.stop_loss = @run.last * (1. - @run.overlap * 2 / 100.0)
     else
-      @run.stop_loss = @run.last * (1. + @run.overlay * 2 / 100.0)
+      @run.stop_loss = @run.last * (1. + @run.overlap * 2 / 100.0)
     end
 
     gon.pair_names = @pair_names
@@ -194,7 +195,7 @@ class RunsController < ApplicationController
   end
   
   def show
-    @account_data  = get_account_data
+#    @account_data  = get_account_data
 #    @active_orders = ZtBtce.active_orders
     
     @orders     = @run.orders
@@ -228,6 +229,21 @@ class RunsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def run_params
-      params.require(:run).permit(:pair_id, :kind, :depo, :last, :indent, :overlay, :martingale, :orders_number, :profit, :scale, :stop_loss, :status)
+      params.require(:run).permit(:pair_id, :kind, :depo, :last, :indent, :overlap, :martingale, :orders_number, :profit, :scale, :stop_loss, :status)
+    end
+
+    #  Gets WEX data (Account Info & Tickers)
+    def get_data
+      @account_data  = get_account_data
+      
+      @pair_names = []
+      @tickers    = []
+      @limits     = []
+    
+      Pair.active.order(:name).each do |pair|
+        pair_name = pair.name
+        @pair_names[pair.id] = pair_name
+        @tickers << get_ticker(pair_name)#[pair_name]
+      end
     end
 end

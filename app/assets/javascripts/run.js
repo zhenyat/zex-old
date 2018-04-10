@@ -45,13 +45,13 @@ function changeFieldsValues() {
  */
 function changeStopLoss() {
   var runKind = document.getElementById('run_kind').value;
-  var overlay = document.getElementById('run_overlay').value;
+  var overlap = document.getElementById('run_overlap').value;
   var last    = document.getElementById('run_last').value;
 
-  if (runKind === 'ask') {
-    var stopLoss = last * (1. - overlay * 2 / 100.0);
+  if (runKind === 'sell') {
+    var stopLoss = last * (1. - overlap * 2 / 100.0);
   } else {
-    var stopLoss = last * (1. + overlay * 2 / 100.0) ;
+    var stopLoss = last * (1. + overlap * 2 / 100.0) ;
   }
   document.getElementById('run_stop_loss').value = stopLoss;
 }
