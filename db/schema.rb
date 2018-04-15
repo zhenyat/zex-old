@@ -32,7 +32,7 @@ ActiveRecord::Schema.define(version: 2018_03_19_185906) do
 
   create_table "fix_orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "order_id"
-    t.decimal "price", precision: 15, scale: 5
+    t.decimal "rate", precision: 15, scale: 5
     t.decimal "amount", precision: 15, scale: 8
     t.string "error"
     t.integer "status", limit: 1, default: 4, null: false
@@ -53,10 +53,9 @@ ActiveRecord::Schema.define(version: 2018_03_19_185906) do
 
   create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "run_id"
-    t.decimal "price", precision: 15, scale: 5
+    t.decimal "rate", precision: 15, scale: 5
     t.decimal "amount", precision: 15, scale: 8
-    t.decimal "wavg_price", precision: 15, scale: 5
-    t.decimal "fix_price", precision: 15, scale: 5
+    t.decimal "fix_rate", precision: 15, scale: 5
     t.decimal "fix_amount", precision: 15, scale: 8
     t.string "error"
     t.integer "status", limit: 1, default: 4, null: false

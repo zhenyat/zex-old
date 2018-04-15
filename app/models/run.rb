@@ -5,7 +5,7 @@
 #
 # Run attributes:
 #   pair       - Foreign key
-#   kind       - strategy type:                 enum { sell (ask) (0) | buy (bid) (1) }
+#   kind       - strategy type:                 enum { buy (bid) (0) | sell (ask) (1) }
 #   depo       - amount to be applied for Run:  decimal
 #   last       - last closed trade price:       decimal
 #   indent     - price step to first order, %0: float
@@ -25,10 +25,10 @@ class Run < ApplicationRecord
   belongs_to :pair
   has_many   :orders,     dependent: :destroy 
   
-  enum kind:   %w(sell buy)
+  enum kind:   %w(buy sell)
   enum scale:  %w(linear logarithmic)
   enum status: %w(created active executed canceled)
   
-  validates :depo, presence: true
+  validates :depo, presence: true, numericality: { greater_than: 0 }
   validates_with FundsValidator
 end

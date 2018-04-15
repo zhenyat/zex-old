@@ -27,8 +27,11 @@ module AccountPro
     end
 
     data['funds'] = Hash[data['funds'].sort_by {|key, value| key}]  # Sorting by coin
-    data['funds']['usd'] = 200.0
-    data['funds']['bch'] = 10
+    
+    # Data Emulation
+    data['funds']['usd'] = 1000.0
+#    data['funds']['bch'] = 0.01
+    
     data
   end
 end

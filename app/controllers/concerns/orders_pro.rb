@@ -135,9 +135,8 @@ module OrdersPro
     orders = set_orders run
     
     for i in 0...run.orders_number
-      Order.create run_id:    run.id,                      price: orders[i]['price'], 
-                   amount:    orders[i]['amount'],    wavg_price: orders[i]['wavg_price'], 
-                   fix_price: orders[i]['fix_price'], fix_amount: orders[i]['fix_amount']
+      Order.create run_id: run.id, rate: orders[i]['rate'], amount: orders[i]['amount'], 
+                   fix_rate: orders[i]['fix_rate'], fix_amount: orders[i]['fix_amount']
     end
   end
 
@@ -214,99 +213,106 @@ module OrdersPro
 #  end
 
   ##############################################################################
-  #  Creates prices array and calculates first and last elements
+  #  Creates Order prices array and calculates first and last elements
   ##############################################################################
   def initiate_prices run
     prices     = Array.new(run.orders_number - 1)
-    kind       = set_kind(run.kind)
-    prices[0]  = run.last     * (1.0 - kind * run.indent  / 100.0)
-    prices[-1] = prices.first * (1.0 - kind * run.overlap / 100.0)
-    return prices
+    kind       = set_kind run.kind
+    prices[0]  = run.last     * (1.0 + kind * run.indent  / 100.0)
+    prices[-1] = prices.first * (1.0 + kind * run.overlap / 100.0)
+
+    prices
   end
     
   ##############################################################################
   #  Sets *kind* value for orders calculation
   ##############################################################################
   def set_kind kind
-    kind == 'sell' ? -1 : 1
+#    kind == 'sell' ? -1 : 1
+    kind == 'buy' ? -1 : 1
   end
 
   ##############################################################################
   #  Calculates parameters of the *run* orders
+  #  
+  #  Parameters:
+  #   
   ##############################################################################
   def set_orders run
-    #####   Coefficients    #####
-    kind      = set_kind(run.kind)                                    # Sign for factors calculation
-    m_factor  = 1.0 + kind * run.martingale / 100.0                   # Martingale factor
-    pf        = (run.profit + 2.0 * run.pair.fee) / run.orders_number # (Profit + 2*Fee) / orders (%)
-    pf_factor = 1.0 + kind * pf / 100.0                               # profit & Fee factor for ONE order
-    factor    = 0    
+  #####   Coefficients    #####
+    m     = 1.0 + run.martingale / 100.0    # Martingale factor
+    m_sum = 0                               # Sum_of(m-ith) aka geometric progression sum
+    a_sum = 0                               # Sum of orders amounts
+    f     = run.pair.fee / 100.0
+    p     = run.profit   / 100.0
 
-    # Initialize Arrays
-    orders        = Array.new(run.orders_number)    # Array of orders hashes 
-    prices        = Array.new(run.orders_number)    # Array of orders prices
-    base_amounts  = Array.new(run.orders_number)    # Array of orders amounts in base  currency (e.g. BTC)
-    quote_amounts = Array.new(run.orders_number)    # Array of orders amounts in quote currency (e.g. USD)
-    fix_amounts   = Array.new(run.orders_number)    # Array of orders Fix amounts
-    fix_prices    = Array.new(run.orders_number)    # Array of orders Fix prices
-    wavg_amounts  = Array.new(run.orders_number) {Array.new(run.orders_number, 0)}  # Matrix of Weighted Average Amounts 
-    wavg_prices   = Array.new(run.orders_number, 0) # Array of orders Weighted Average prices
+  # Initialize Arrays
+    orders           = Array.new(run.orders_number)  # orders hashes 
+    rates            = Array.new(run.orders_number)  # Orders rates (prices)
+    transactions     = Array.new(run.orders_number)  # Orders transactions (volumes) T = Sum(RA)
+    amounts          = Array.new(run.orders_number)  # Orders amounts - in base currency (e.g. BTC)
+    fix_amounts      = Array.new(run.orders_number)  # Fix Orders amounts
+    fix_transactions = Array.new(run.orders_number)  # Fix Orders transactions
+    fix_rates        = Array.new(run.orders_number)  # Fix Orders rates (prices)
     
-    #####   Calculate order prices   #####
+    #####   Calculate Orders Rates   #####
     if run.scale == 'linear'
-      prices = set_prices_linear run
+      rates = set_prices_linear run
     else
-      prices = set_prices_pseudo_logarithmic run
+      rates = set_prices_pseudo_logarithmic run
+     #rates = set_prices_logarithmic run
     end
 
-    #####   Calculate order amounts   #####
+    #####   Calculate Orders Transactions & Amounts   #####
     for i in 0...run.orders_number
-      factor += m_factor**i
+      m_sum += m**i
     end
 
-    quote_amounts[0] = run.depo / factor            # order increment
-    base_amounts[0]  = quote_amounts[0] / prices[0]
-    fix_amounts[0]   = base_amounts[0]
-      
+    transactions[0] = run.depo / m_sum                    # T0
+    amounts[0]      = transactions[0] / rates[0]          # A0
+
+    trans_per_order    = []                               # Transaction for each order
+    trans_per_order[0] = transactions[0]
     for i in 1...run.orders_number
-      quote_amounts[i] = quote_amounts[i-1] * m_factor
-      base_amounts[i]  = quote_amounts[i] / prices[i]
-      fix_amounts[i]   = fix_amounts[i-1] + base_amounts[i]
+      trans_per_order[i] = trans_per_order[i-1] * m       # It's a geometrical progression
+      amounts[i]         = trans_per_order[i]   / rates[i]
+      transactions[i]    = transactions[i-1]    + trans_per_order[i]
     end
 
-    #####   Calculate Matrix of Weighted Average Amounts and output data  #####
+    #####   Fix Orders   #####
     for i in 0...run.orders_number
-      for j in 0..i
-        wavg_amounts[i][j] = base_amounts[j] / fix_amounts[i] # Matrix
-        wavg_prices[i]    += prices[j] * wavg_amounts[i][j]   # Weighted Average Prices (w/o profit & fee)
-      end
-      fix_prices[i] = wavg_prices[i] * pf_factor              # Fix Prices (with profit & fee)
+      a_sum              += amounts[i]
+      fix_amounts[i]      = (1.0 - f) * a_sum                   # equals Orders base earned
+      fix_transactions[i] = transactions[i] * (1.0 + p) / (1.0 - f)
+      fix_rates[i]        = fix_transactions[i] / fix_amounts[i]
     end
-    
+puts "ZT! A: #{fix_amounts}"  
+puts "ZT! T: #{fix_transactions}"  
+puts "ZT! R: #{fix_rates}"  
     #####   Orders    #####
     for i in 0...run.orders_number
       order = {}
-      order['price']      = prices[i]
-      order['amount']     = base_amounts[i]
-      order['wavg_price'] = wavg_prices[i]
-      order['fix_price']  = fix_prices[i]
+      order['rate']       = rates[i]
+      order['amount']     = amounts[i]
+      order['fix_rate']   = fix_rates[i]
       order['fix_amount'] = fix_amounts[i]
-      orders[i] = order
+      orders[i]           = order
     end
+    
     orders
   end
-
+  
   ##############################################################################
   #  Generates orders prices with linear scale:
-  #   price[i] = price[i-1] + diff
+  #   price[i] = price[i-1] + delta
   #   n - orders_number
   ##############################################################################
   def set_prices_linear run
     prices = initiate_prices(run)
-    diff   = (prices.last - prices.first) / (run.orders_number - 1)
+    delta  = (prices.last - prices.first) / (run.orders_number - 1)
 
     for i in (1...run.orders_number)
-      prices[i] = prices[i-1] + diff
+      prices[i] = prices[i-1] + delta
     end
     
     prices

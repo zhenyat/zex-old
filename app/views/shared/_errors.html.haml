@@ -1,0 +1,8 @@
+/ https://coderwall.com/p/zmgs-g/custom-error-partial-with-ruby-on-rails-and-twitter-bootstrap
+- if object.errors.any?
+  .alert.alert-danger
+    %a.close{"data-dismiss" => "alert"} ×
+    %ul
+      - object.errors.full_messages.each do |msg|
+        = content_tag :li, msg, :id => "error_#{msg}" if msg.is_a?(String)
+

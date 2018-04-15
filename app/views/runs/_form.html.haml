@@ -5,7 +5,8 @@
 %hr
 
 = simple_form_for(@run) do |f|
-  = f.error_notification
+  /= f.error_notification
+  = render 'shared/errors', object: @run
   .row
     .col-md-2
       .form-inputs
