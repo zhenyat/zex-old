@@ -23,8 +23,7 @@
               %td.ask= 'Sell'
             - else
               %td.bid= 'Buy'
-            /%td= fix_order.x_type
-            %td= number_to_currency fix_order.rate, precision: 3
+            %td= number_to_currency fix_order.rate, precision: 3, unit: quote_unit
             %td= fix_order.amount
             %td= fix_order.status
             - if fix_order.x_id.present? 

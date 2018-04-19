@@ -5,21 +5,18 @@
             <url>app/views/runs/_form.html.haml</url>
             <bookmark id="1">
                 <name/>
-                <line>16</line>
+                <line>18</line>
                 <key/>
             </bookmark>
         </file>
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/models/concerns/funds_validator.rb</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/shared/_tickers.html.haml</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/models/order.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/helpers/runs_helper.rb</file>
             <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/runs/_form.html.haml</file>
             <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/runs_controller.rb</file>
             <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/concerns/orders_pro.rb</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/concerns/account_pro.rb</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/concerns/data_pro.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/shared/_orders.html.haml</file>
         </group>
     </open-files>
 </project-private>

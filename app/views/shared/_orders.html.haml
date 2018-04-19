@@ -11,8 +11,8 @@
           %th= 'Quote to Spend'
           %th= 'Fix Rate'
           %th= 'Fix Amount'
-          /%th= 'Fix Transaction'
           %th= 'Quote to Earn'
+          %th= 'Profit'
           %th= 'Status'
 
       %tbody
@@ -20,13 +20,13 @@
           %tr
             %td= order.id
             %td= order.x_id
-            %td= number_to_currency order.rate, precision: 3
+            %td= number_to_currency order.rate,            precision: 3, unit: quote_unit
             %td= order.amount
-            %td= number_to_currency quote_spent(order), precision: 3
-            %td= number_to_currency order.fix_rate,  precision: 3
+            %td= number_to_currency quote_to_spend(order), precision: 3, unit: quote_unit
+            %td= number_to_currency order.fix_rate,        precision: 3, unit: quote_unit
             %td= order.fix_amount
-            /%td= number_to_currency fix_transaction(order), precision: 3
-            %td= number_to_currency quote_earned(order), precision: 3
+            %td= number_to_currency quote_to_earn(order),  precision: 3, unit: quote_unit
+            %td= number_to_currency quote_profit(order),   precision: 3, unit: quote_unit
             %td= order.status
             - if order.x_id.present? 
               %td= link_to 'More', "#", class: 'btn btn-sm btn-outline-dark btn-block', onclick: "alert('Order EX ID: ' + #{order.x_id} + \"\\nPair: \" + \"#{order.x_pair}\" + \"\\nType: \" + \"#{order.x_type}\" + \"\\nDone Amount: \" + #{order.x_done_amount} + \"\\nRest Amount: \" + #{order.x_rest_amount} + \"\\nRate: \" + #{order.x_rate} + \"\\nTimestamp: \" + #{order.x_timestamp} + \"\\nBase Fund: \" + #{order.x_base} + \"\\nQuote Fund: \" + #{order.x_quote} + \"\\nStatus: \" + \"#{order.x_status}\" + \"\\nError: \" + \"#{order.error}\")"

@@ -34,4 +34,6 @@ class Order < ApplicationRecord
   enum status:   %w(active executed canceled canc_partly_executed created rejected wrong)
   enum x_type:   %w(sell buy)
   enum x_status: %w(x_active x_executed x_canceled x_canc_partly_executed)
+  
+  validates_with FundsValidator
 end

@@ -5,9 +5,9 @@
 #
 # Run attributes:
 #   order      - Foreign key
-#   rate      - Price to be sold /bought at:           decimal
-#   amount     - Amount to be sold /bought:             decimal
-#   error      - error message from the Server          string
+#   rate       - Price to be sold /bought at:              decimal
+#   amount     - Amount to be sold /bought:                ecimal
+#   error      - error message from the Server             string
 #   status     - Run status:  enum {active (0)executed (1)|canceled (2)|canceled_but_partly_executed (3) |created (4)|active (1)|rejected (5)|}
 #
 #   Ex Order values (if nil - not placed yet):

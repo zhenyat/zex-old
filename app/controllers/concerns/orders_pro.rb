@@ -127,12 +127,12 @@ module OrdersPro
   # Creates Fix Order for the Run after the last executed *order*
   ##############################################################################
   def create_fix_order order
-      FixOrder.create run_id: order.run.id, price: order.fix_price, amount: order.fix_amount 
+      FixOrder.create run_id: order.run.id, rate: order.fix_rate, amount: order.fix_amount 
   end
   
   # Creates all Orders for the Run
   def create_orders run
-    orders = set_orders run
+    orders = run.kind == 'buy' ? set_orders_buy(run) : set_orders_sell(run)
     
     for i in 0...run.orders_number
       Order.create run_id: run.id, rate: orders[i]['rate'], amount: orders[i]['amount'], 
@@ -156,7 +156,7 @@ module OrdersPro
     end
     
     pair_name = run.pair.name
-    response  = ZtBtce.trade pair: pair_name, type: type, rate: order.price.round(3), amount: order.amount
+    response  = ZtBtce.trade pair: pair_name, type: type, rate: order.rate.round(3), amount: order.amount
 
     if response['success'] == 0                             # Error
       order.status = 'rejected'
@@ -213,15 +213,15 @@ module OrdersPro
 #  end
 
   ##############################################################################
-  #  Creates Order prices array and calculates first and last elements
+  #  Creates Order rates array and calculates first and last elements
   ##############################################################################
-  def initiate_prices run
-    prices     = Array.new(run.orders_number - 1)
+  def initiate_rates run
+    rates     = Array.new(run.orders_number - 1)
     kind       = set_kind run.kind
-    prices[0]  = run.last     * (1.0 + kind * run.indent  / 100.0)
-    prices[-1] = prices.first * (1.0 + kind * run.overlap / 100.0)
+    rates[0]  = run.last    * (1.0 + kind * run.indent  / 100.0)
+    rates[-1] = rates.first * (1.0 + kind * run.overlap / 100.0)
 
-    prices
+    rates
   end
     
   ##############################################################################
@@ -233,12 +233,12 @@ module OrdersPro
   end
 
   ##############################################################################
-  #  Calculates parameters of the *run* orders
+  #  Calculates parameters of the *buy* Run's orders
   #  
   #  Parameters:
   #   
   ##############################################################################
-  def set_orders run
+  def set_orders_buy run
   #####   Coefficients    #####
     m     = 1.0 + run.martingale / 100.0    # Martingale factor
     m_sum = 0                               # Sum_of(m-ith) aka geometric progression sum
@@ -257,10 +257,10 @@ module OrdersPro
     
     #####   Calculate Orders Rates   #####
     if run.scale == 'linear'
-      rates = set_prices_linear run
+      rates = set_rates_linear run
     else
-      rates = set_prices_pseudo_logarithmic run
-     #rates = set_prices_logarithmic run
+      rates = set_rates_pseudo_logarithmic run
+     #rates = set_rates_logarithmic run
     end
 
     #####   Calculate Orders Transactions & Amounts   #####
@@ -286,9 +286,7 @@ module OrdersPro
       fix_transactions[i] = transactions[i] * (1.0 + p) / (1.0 - f)
       fix_rates[i]        = fix_transactions[i] / fix_amounts[i]
     end
-puts "ZT! A: #{fix_amounts}"  
-puts "ZT! T: #{fix_transactions}"  
-puts "ZT! R: #{fix_rates}"  
+ 
     #####   Orders    #####
     for i in 0...run.orders_number
       order = {}
@@ -303,48 +301,116 @@ puts "ZT! R: #{fix_rates}"
   end
   
   ##############################################################################
-  #  Generates orders prices with linear scale:
-  #   price[i] = price[i-1] + delta
-  #   n - orders_number
+  #  Calculates parameters of the *sell* Run's  orders
+  #  
+  #  Order's Fee:     Transaction * Fee
+  #  FixOrder's Fee:  Amount * Fee
+  #   
   ##############################################################################
-  def set_prices_linear run
-    prices = initiate_prices(run)
-    delta  = (prices.last - prices.first) / (run.orders_number - 1)
+  def set_orders_sell run
+  #####   Coefficients    #####
+    m     = 1.0 + run.martingale / 100.0    # Martingale factor
+    m_sum = 0                               # Sum_of(m-ith) aka geometric progression sum
+    a_sum = 0                               # Sum of orders amounts
+    f     = run.pair.fee / 100.0
+    p     = run.profit   / 100.0
+    
+  # Initialize Arrays
+    orders           = Array.new(run.orders_number)  # orders hashes 
+    rates            = Array.new(run.orders_number)  # Orders rates (prices)
+    transactions     = Array.new(run.orders_number)  # Orders transactions (volumes) T = Sum(RA)
+    amounts          = Array.new(run.orders_number)  # Orders amounts - in base currency (e.g. BTC)
+    fix_amounts      = Array.new(run.orders_number)  # Fix Orders amounts
+    fix_transactions = Array.new(run.orders_number)  # Fix Orders transactions
+    fix_rates        = Array.new(run.orders_number)  # Fix Orders rates (prices)
+    
+    #####   Calculate Orders Rates   #####
+    if run.scale == 'linear'
+      rates = set_rates_linear run
+    else
+      rates = set_rates_pseudo_logarithmic run
+     #rates = set_rates_logarithmic run
+    end
 
-    for i in (1...run.orders_number)
-      prices[i] = prices[i-1] + delta
+    #####   Calculate Orders Amounts & Transactions  #####
+    for i in 0...run.orders_number
+      m_sum += m**i
     end
     
-    prices
+    a_max           = run.depo / rates[0]    # Potentially max Amount could be sold to earn the Depo
+    amounts[0]      = a_max / m_sum
+    transactions[0] = rates[0] * amounts[0]
+  
+    trans_per_order    = []                               # Transaction for each order
+    trans_per_order[0] = transactions[0]
+    for i in 1...run.orders_number
+      trans_per_order[i] = trans_per_order[i-1] * m       # It's a geometrical progression
+      amounts[i]         = trans_per_order[i]   / rates[i]
+      transactions[i]    = transactions[i-1]    + trans_per_order[i]
+    end
+    
+    #####   Fix Orders   #####
+    for i in 0...run.orders_number
+#      fix_transactions[i] = transactions[i] * (1 - f)   # Fee is deducted
+      fix_amounts[i]      = amounts[i] * (1 + f)        # Further FixOrder Fee is taken into account
+      fix_rates[i]        = trans_per_order[i] * (1 + p) / amounts[i] / (1 - f*f)
+    end
+      
+     #####   Orders    #####
+    for i in 0...run.orders_number
+      order = {}
+      order['rate']       = rates[i]
+      order['amount']     = amounts[i]
+      order['fix_rate']   = fix_rates[i]
+      order['fix_amount'] = fix_amounts[i]
+      orders[i]           = order
+    end
+    
+    orders
+  end
+  
+  ##############################################################################
+  #  Generates orders rates with linear scale:
+  #   rate[i] = rate[i-1] + delta
+  #   n - orders_number
+  ##############################################################################
+  def set_rates_linear run
+    rates = initiate_rates(run)
+    delta  = (rates.last - rates.first) / (run.orders_number - 1)
+
+    for i in (1...run.orders_number)
+      rates[i] = rates[i-1] + delta
+    end
+    
+    rates
   end
 
   # This is for testing only
-  def set_prices_logarithmic_test run
-#    prices = Array.new(run.orders_number)
+  def set_rates_logarithmic_test run
+#    rates = Array.new(run.orders_number)
     [1535.523, 1519.899, 1500.775, 1476.121, 1441.373, 1381.971]
   end
   
   
-  def set_prices_logarithmic run
-    prices = initiate_prices(run)
-    
+  def set_rates_logarithmic run
+    rates = initiate_rates(run)    
   end
   
   ##############################################################################
-  #  Generates orders prices with pseudo-logarithmic scale:
+  #  Generates orders rates with pseudo-logarithmic scale:
   #  price[i] = price[i-1] * i * diff
   #  where diff = (price_max - price_min) / sum_of arithmetic_progression
   #        sum_of arithmetic_progression = (0+(n-1))/2 *n = n*(n-1)/2
   #        n - orders_number
   ##############################################################################
-  def set_prices_pseudo_logarithmic run
-    prices = initiate_prices(run)
+  def set_rates_pseudo_logarithmic run
+    rates = initiate_rates(run)
     arithm_progr_sum = run.orders_number * (run.orders_number - 1) / 2.0    # sum = n/2*(n-1)
-    elemenrtary_diff = (prices.last - prices.first) / arithm_progr_sum
+    elemenrtary_diff = (rates.last - rates.first) / arithm_progr_sum
     for i in 1...run.orders_number
-      prices[i] = prices[i-1] + elemenrtary_diff * i
+      rates[i] = rates[i-1] + elemenrtary_diff * i
     end
-    prices
+    rates
   end
   
   # Preliminary - to be tested
@@ -372,9 +438,9 @@ puts "ZT! R: #{fix_rates}"
   ##############################################################################
   # Validates order attributes:
   #   If *sell* base validate its amount
-  #   If *buy* base validate quote prices
+  #   If *buy* base validate quote rates
   ##############################################################################
-  def valid? order
+  def valid? order          # Obsolete
     run  = order.run.pair
     pair = run.pair
     
