@@ -21,7 +21,7 @@ module OrdersPro
       if order.x_id == response['return']['order_id']   # be on the safe side
         pair_name     = order.run.pair.name
         order.x_base  = response['return']['funds'][pair_name.split('_').first]
-        order.x_quote = response['return']['funds'][pair_name.split('_').first]
+        order.x_quote = response['return']['funds'][pair_name.split('_').last]
         order.error   = nil
         order.status  = 'canceled'
       else                                            # Something went wrong
@@ -56,7 +56,7 @@ module OrdersPro
   ##############################################################################
   # Checks *fix_order*
   # 
-  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
+  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *rate* only: round(3) to be applied!
   ##############################################################################
   def check_fix_order order
     response = ZtBtce.order_info order.x_id
@@ -68,14 +68,14 @@ module OrdersPro
       order.x_timestamp = response['return']['timestamp_created'] if order.x_timestamp.nil?
 
       # Just some verifications
-      if order.amount == response['return']['start_amount'] && order.price == response['return']['rate'] 
+      if order.amount == response['return']['start_amount'] && order.rate == response['return']['rate'] 
         order.x_rest_amount = response['return']['amount']
         order.x_done_amount = response['return']['start_amount'] - order.x_rest_amount
         order.status        = response['return']['status']
         order.error         = nil
       else                                                  # Something went wrong
         order.status = 'wrong'
-        order.error  = "Something went wrong: price = #{order['return']['rate']}; amount = #{['return']['start_amount']}"
+        order.error  = "Something went wrong: rate = #{order['return']['rate']}; amount = #{['return']['start_amount']}"
       end 
     end
     
@@ -91,7 +91,7 @@ module OrdersPro
   ##############################################################################
   # Checks *order*
   # 
-  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
+  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *rate* only: round(3) to be applied!
   ##############################################################################
   def check_order order
     response = ZtBtce.order_info order.x_id
@@ -103,14 +103,15 @@ module OrdersPro
       order.x_timestamp = response['return']['timestamp_created'] if order.x_timestamp.nil?
 
       # Just some verifications
-      if order.amount == response['return']['start_amount'] && order.price == response['return']['rate'] 
+      if order.amount == response['return']['start_amount'] && order.rate == response['return']['rate'] 
         order.x_rest_amount = response['return']['amount']
         order.x_done_amount = response['return']['start_amount'] - order.x_rest_amount
         order.status        = response['return']['status']
+        order.x_status      = response['return']['status']
         order.error         = nil
       else                                                  # Something went wrong
         order.status = 'wrong'
-        order.error  = "Something went wrong: price = #{order['return']['rate']}; amount = #{['return']['start_amount']}"
+        order.error  = "Something went wrong: rate = #{order['return']['rate']}; amount = #{['return']['start_amount']}"
       end 
     end
     
@@ -133,7 +134,6 @@ module OrdersPro
   # Creates all Orders for the Run
   def create_orders run
     orders = run.kind == 'buy' ? set_orders_buy(run) : set_orders_sell(run)
-    
     for i in 0...run.orders_number
       Order.create run_id: run.id, rate: orders[i]['rate'], amount: orders[i]['amount'], 
                    fix_rate: orders[i]['fix_rate'], fix_amount: orders[i]['fix_amount']
@@ -143,16 +143,16 @@ module OrdersPro
   ##############################################################################
   # Places *order* (fix = false) or *fix_order* (fix = true)
   # 
-  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *price* only: round(3) to be applied!
+  # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *rate* only: round(3) to be applied!
   ##############################################################################
   def place_order order, fix = false
 
     if fix
       run  = order.order.run                        # FixOrder.Order.Run
-      type = (run.kind == 'buy') ? 'buy' : 'sell'   # opposite to Run's kind
+      type = (run.kind == 'buy') ? 'sell' : 'buy'   # opposite to Run's kind
     else
       run  = order.run                              # Order.Run
-      type = (run.kind == 'sell') ? 'sell' : 'buy'
+      type = (run.kind == 'buy') ? 'sell' : 'buy'
     end
     
     pair_name = run.pair.name
@@ -162,62 +162,28 @@ module OrdersPro
       order.status = 'rejected'
       order.error  = response['error']
     else                                                    # Order has been placed
+      order.error         = nil
       order.x_id          = response['return']['order_id']
       order.x_done_amount = response['return']['received']
       order.x_rest_amount = response['return']['remains']
 
       order.x_base  = response['return']['funds'][pair_name.split('_').first]
-      order.x_quote = response['return']['funds'][pair_name.split('_').first]
+      order.x_quote = response['return']['funds'][pair_name.split('_').last]
 
-      if order.x_id == 0          # Order was fully 'matched' if its id = 0
-        order.status = 'rejected'
-        order.error  = "Order was fully 'matched'"
-      else
-        order.status = 'active'
-        order.error  = nil
-      end
+      # Order was fully 'matched' if its id = 0
+      order.status = order.x_id == 0 ? 'executed' : 'active'
     end
 
     order.save!
     "Order #{order.id}: #{order.error}" if order.error.present?   # Return error message 
   end
-    
-  ##############################################################################
-  # Handles API *response* and updates DB *order* record properly
-  ##############################################################################
-#  def handle_response order, response
-#    if response['success'] == 0                       # Error
-#      order.status = 'rejected'
-#      order.error  = response['error']
-#      order.save
-#      
-#      "Order #{order.id}: #{order.error}"             # Return error message
-#      
-#    else                                              # Order has been handled
-#      order.x_id          = response['return']['order_id']
-#      order.x_done_amount = response['return']['received']
-#      order.x_rest_amount = response['return']['remains']
-#      
-#      order.run.pair
-#      order.x_base  = response['return']['funds'][]
-#      order.x_quote = response['return']['order_id']
-#      
-#      # Order was fully 'matched' if its id = 0
-#      order.status = (order.x_id == 0) ? 'executed' : 'active'
-#
-#      order.error  = nil
-#      order.save
-#      
-#      nil                                             # No error message returned
-#    end
-#  end
 
   ##############################################################################
   #  Creates Order rates array and calculates first and last elements
   ##############################################################################
   def initiate_rates run
-    rates     = Array.new(run.orders_number - 1)
-    kind       = set_kind run.kind
+    rates     = Array.new(run.orders_number)
+    kind      = set_kind run.kind
     rates[0]  = run.last    * (1.0 + kind * run.indent  / 100.0)
     rates[-1] = rates.first * (1.0 + kind * run.overlap / 100.0)
 
@@ -259,8 +225,8 @@ module OrdersPro
     if run.scale == 'linear'
       rates = set_rates_linear run
     else
-      rates = set_rates_pseudo_logarithmic run
-     #rates = set_rates_logarithmic run
+     #rates = set_rates_pseudo_logarithmic run
+     rates = set_rates_logarithmic run
     end
 
     #####   Calculate Orders Transactions & Amounts   #####
@@ -328,8 +294,8 @@ module OrdersPro
     if run.scale == 'linear'
       rates = set_rates_linear run
     else
-      rates = set_rates_pseudo_logarithmic run
-     #rates = set_rates_logarithmic run
+     #rates = set_rates_pseudo_logarithmic run
+     rates = set_rates_logarithmic run
     end
 
     #####   Calculate Orders Amounts & Transactions  #####
@@ -375,7 +341,7 @@ module OrdersPro
   #   n - orders_number
   ##############################################################################
   def set_rates_linear run
-    rates = initiate_rates(run)
+    rates  = initiate_rates(run)
     delta  = (rates.last - rates.first) / (run.orders_number - 1)
 
     for i in (1...run.orders_number)
@@ -391,23 +357,48 @@ module OrdersPro
     [1535.523, 1519.899, 1500.775, 1476.121, 1441.373, 1381.971]
   end
   
-  
+  ##############################################################################
+  #  Generates orders rates with logarithmic scale:
+  #   x = lg(rate)
+  #   x[i] = x[i-1] + diff * i
+  #     where diff = (x_mx - x_min) / sum_of arithmetic_progression
+  #           sum_of arithmetic_progression = (0+(n-1))/2 *n = n*(n-1)/2
+  #           n - orders_number
+  #   rate[i] = 10 ^ (x[i]),  i = 1, ..., n-1
+  ##############################################################################
   def set_rates_logarithmic run
-    rates = initiate_rates(run)    
+    rates  = initiate_rates(run)
+
+    n      = run.orders_number
+    x      = Array.new(n)
+    x[0]   = Math.log10 rates[0]
+    x[n-1] = Math.log10 rates[n-1]
+
+    arithm_progr_sum = n * (n - 1) / 2.0    # sum = n/2*(n-1)
+    elemenrtary_diff = (x.last - x.first) / arithm_progr_sum
+  
+    for i in 1...n
+      x[i]     = x[i-1] + elemenrtary_diff * i
+      rates[i] = 10**x[i]
+    end
+    rates
   end
   
   ##############################################################################
   #  Generates orders rates with pseudo-logarithmic scale:
-  #  price[i] = price[i-1] * i * diff
-  #  where diff = (price_max - price_min) / sum_of arithmetic_progression
-  #        sum_of arithmetic_progression = (0+(n-1))/2 *n = n*(n-1)/2
-  #        n - orders_number
+  #  rate[i] = rate[i-1] + diff * i,   i = 1, ..., n-1
+  #    where diff = (rate_max - rate_min) / sum_of arithmetic_progression
+  #          sum_of arithmetic_progression = (0+(n-1))/2 *n = n*(n-1)/2
+  #          n - orders_number
   ##############################################################################
   def set_rates_pseudo_logarithmic run
     rates = initiate_rates(run)
-    arithm_progr_sum = run.orders_number * (run.orders_number - 1) / 2.0    # sum = n/2*(n-1)
+    n     = run.orders_number
+    
+    arithm_progr_sum = n * (n - 1) / 2.0    # sum = n/2*(n-1)
     elemenrtary_diff = (rates.last - rates.first) / arithm_progr_sum
-    for i in 1...run.orders_number
+    
+    for i in 1...n
       rates[i] = rates[i-1] + elemenrtary_diff * i
     end
     rates
@@ -451,7 +442,7 @@ module OrdersPro
         true
       end
     else
-      if order.price < pair.min_price or order.price > pair.max_price
+      if order.rate < pair.min_price or order.rate > pair.max_price
         false
       else
         true

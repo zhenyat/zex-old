@@ -119,20 +119,9 @@ class RunsController < ApplicationController
 
   def new
     @run = Run.new
-#    @account_data  = get_account_data
-    
-    # Update Tickers
-#    @pair_names = []
-#    @tickers    = []
-#    
-#    Pair.active.order(:name).each do |pair|
-#      pair_name = pair.name
-#      @pair_names[pair.id] = pair_name
-#      @tickers << get_ticker(pair_name)#[pair_name]
-#    end
     
     # Data for JS functions
-    objects = []              # array of ticker SINGLE hashes
+    objects = []              # array of Ticker SINGLE hashes
     @tickers.each do |ticker|
       object = {}
       object['pair'] = ticker.first.first
@@ -144,10 +133,11 @@ class RunsController < ApplicationController
     objects.each do |object|
       @run.last = object['last'] if object['pair'] == @run.pair.name
     end
-    if @run.kind == 'ask'
-      @run.stop_loss = @run.last * (1. - @run.overlap * 2 / 100.0)
-    else
+    
+    if @run.kind == 'buy'
       @run.stop_loss = @run.last * (1. + @run.overlap * 2 / 100.0)
+    else
+      @run.stop_loss = @run.last * (1. - @run.overlap * 2 / 100.0)
     end
 
     gon.pair_names = @pair_names
@@ -195,9 +185,6 @@ class RunsController < ApplicationController
   end
   
   def show
-#    @account_data  = get_account_data
-#    @active_orders = ZtBtce.active_orders
-    
     @orders     = @run.orders
     @fix_orders = []
     
