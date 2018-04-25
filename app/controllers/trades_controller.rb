@@ -169,34 +169,36 @@ def order_book
       
       data.delete_if {|d| d.first.to_time < time_round((Time.now - period), TIME_SLOT)}   # Remove candles out of range
 
-      candle_last = data.pop                     # Remove last candle (cause it could not be finalized)
-      since       = candle_last.first.to_time
+      if data.present?
+        candle_last = data.pop                          # Remove last candle (cause it could not be finalized)
+        since       = candle_last.first.to_time
 
-      trades = Trade.where('pair_id = ? AND timestamp >= ?',pair.id, since.to_i).order(:tid)  # Add new trades
+        trades = Trade.where('pair_id = ? AND timestamp >= ?',pair.id, since.to_i).order(:tid)  # Add new trades
 
-      time_frame = []                                 # Limits of time frame (min / max)
-      time_frame = set_time_frame (since - TIME_SLOT), TIME_SLOT
+        time_frame = []                                 # Limits of time frame (min / max)
+        time_frame = set_time_frame (since - TIME_SLOT), TIME_SLOT
 
-      while time_frame.first <= Time.now.to_i
+        while time_frame.first <= Time.now.to_i
 
-        candle_trades = trades.where('timestamp >= ? and timestamp < ?', time_frame.first, time_frame.last).order(:timestamp)
+          candle_trades = trades.where('timestamp >= ? and timestamp < ?', time_frame.first, time_frame.last).order(:timestamp)
 
-        if candle_trades.present?
-          candle = form_candle(candle_trades, time_frame)
-          data.push candle
+          if candle_trades.present?
+            candle = form_candle(candle_trades, time_frame)
+            data.push candle
+          end
+
+          time_frame[0] += TIME_SLOT
+          time_frame[1] += TIME_SLOT
         end
 
-        time_frame[0] += TIME_SLOT
-        time_frame[1] += TIME_SLOT
+
+        # Store updated data
+        store_cashed_data pair_name, data
+
+        @pairs         << pair_name
+        @candles_first << data.first
+        @candles_last  << data.last
       end
-
-
-      # Store updated data
-      store_cashed_data pair_name, data
-
-      @pairs         << pair_name
-      @candles_first << data.first
-      @candles_last  << data.last
     end
 
     t_finish      = Process.clock_gettime(Process::CLOCK_MONOTONIC)

@@ -43,16 +43,17 @@
 #   26.10.2017  disable gem 'rails_12factor' - not needed anymore
 #   09.01.2018  Ruby 2.5.0, bootstrap 4.0.0.beta3
 #   07.02.2018  Rails 5.2.0.rc1, bootstrap 4.0.0, webpacker
+#   25.04.2018  Ruby 2.5.1, Rails 2.5.0
 ################################################################################
 source 'https://rubygems.org'
-ruby '2.5.0'
+ruby '2.5.1'
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.2.0.rc2'                    # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails', '~> 5.2.0'                        # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 
 #gem 'sqlite3'                                 # Use sqlite3    as the database for Active Record
 #gem 'sqlite3', groups: [:test, :development]
