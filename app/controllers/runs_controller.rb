@@ -3,7 +3,7 @@ class RunsController < ApplicationController
   include OrdersPro
   include AccountPro
   
-  before_action :set_run, only: [:show, :edit, :update, :destroy, :cancel, :check_fix_orders, :check_orders, :place_orders]
+  before_action :set_run, only: [:show, :edit, :update, :destroy, :cancel, :check_fix_orders, :check_orders, :place_orders, :update_fix_orders]
   before_action :get_data, only: [:create, :new, :show]
   
   ################################################################################
@@ -206,6 +206,29 @@ class RunsController < ApplicationController
         format.json { render json: @run.errors, status: :unprocessable_entity }
       end
     end
+  end
+  
+  ##############################################################################
+  # Updates Fix Orders: cancels previous / creates new one
+  ##############################################################################
+  def update_fix_orders
+    orders              = @run.orders
+    last_executed_order = orders.executed.last
+    
+    if last_executed_order.present?
+      fix_orders_array = orders.map(&:fix_order).compact      # remove nil elements
+      if fix_orders_array.empty?                              # There is no fix_orders for the Run
+        create_fix_order last_executed_order                  # Create First Fix Order
+      else
+        if last_executed_order.fix_order.nil?
+          fix_orders_array.each do |fix_order|
+            cancel_order_test(fix_order) if fix_order.active?      # Cancel previous active Fix Order if exists
+          end
+          create_fix_order last_executed_order                # Create New Fix Order
+        end
+      end
+    end 
+    redirect_to @run
   end
   
   private

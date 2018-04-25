@@ -19,10 +19,16 @@
             %td= fix_order.id
             %td= fix_order.x_id
             %td= fix_order.order.id
-            - if fix_order.x_type == 'sell'
-              %td.ask= 'Sell'
+            - if fix_order.x_type.present?
+              - if fix_order.x_type == 'sell'
+                %td.ask= 'Sell'
+              - else
+                %td.bid= 'Buy'
             - else
-              %td.bid= 'Buy'
+              - if @run.kind == 'buy'
+                %td.ask= 'Sell'
+              - else
+                %td.bid= 'Buy'
             %td= number_to_currency fix_order.rate, precision: 3, unit: quote_unit
             %td= fix_order.amount
             %td= fix_order.status

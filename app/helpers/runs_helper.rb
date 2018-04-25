@@ -77,7 +77,7 @@ module RunsHelper
       ''
     end
   end
-  
+
   def run_status status
     case status
     when 0

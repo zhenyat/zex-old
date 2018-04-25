@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     get :cancel_fix_order,  on: :member
     get :check_fix_orders,  on: :member
     get :place_fix_order,   on: :member
+    get :update_fix_orders, on: :member
   end
   
   resources :pairs

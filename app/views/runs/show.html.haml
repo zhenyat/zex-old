@@ -42,20 +42,26 @@
     .row
       -#.col-md-1
         = link_to 'Edit', edit_run_path(@run), class: 'btn btn-sm btn-warning btn-block'
-      .col-md-1
+      .col-xs-1
         = link_to 'Back', runs_path, class: 'btn btn-sm btn-secondary btn-block'
 
       /.col-md-2.offset-md-1
       .col-md-1.offset-md-1
         = link_to 'Place Orders', place_orders_run_path, class: 'btn btn-sm btn-primary btn-block'
       - if !@run.created?
-        .col-xs-2
+        .col-xs-1
           = link_to 'Check Orders', check_orders_run_path, class: 'btn btn-sm btn-primary btn-block'
       - if @fix_orders.present?
         .col-md-1.offset-md-1
-          = link_to 'Place Fix', place_fix_order_run_path, class: 'btn btn-sm btn-info btn-block'
+          = link_to 'Update Fix',  update_fix_orders_run_path, class: 'btn btn-sm btn-info btn-block'
+        .col-md-1
+          = link_to 'Place Fix', place_fix_order_run_path,  class: 'btn btn-sm btn-info btn-block'
         .col-xs-2
           = link_to 'Check Fixes', check_fix_orders_run_path, class: 'btn btn-sm btn-info btn-block'
+      - else
+        - if @run.orders.executed.present?
+          .col-md-1.offset-md-1
+            = link_to 'Create Fix', update_fix_orders_run_path, class: 'btn btn-sm btn-info btn-block'
       - if @run.active?
         .col-xs-2.offset-md-2
           = link_to 'Cancel Run', cancel_run_path, class: 'btn btn-sm btn-danger btn-block', data: { confirm: 'Are you sure?' }

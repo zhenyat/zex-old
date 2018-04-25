@@ -38,6 +38,10 @@ module OrdersPro
     end
   end
   
+  def cancel_order_test order
+    order.update status: 'canceled'
+  end
+  
   ##############################################################################
   # Cancels all Run's active Orders including Fix Order if any
   ##############################################################################
@@ -128,7 +132,7 @@ module OrdersPro
   # Creates Fix Order for the Run after the last executed *order*
   ##############################################################################
   def create_fix_order order
-      FixOrder.create run_id: order.run.id, rate: order.fix_rate, amount: order.fix_amount 
+      FixOrder.create order_id: order.id, rate: order.fix_rate, amount: order.fix_amount 
   end
   
   # Creates all Orders for the Run
@@ -151,8 +155,7 @@ module OrdersPro
       run  = order.order.run                        # FixOrder.Order.Run
       type = (run.kind == 'buy') ? 'sell' : 'buy'   # opposite to Run's kind
     else
-      run  = order.run                              # Order.Run
-      type = (run.kind == 'buy') ? 'sell' : 'buy'
+      type = order.run.kind                         # Order.Run
     end
     
     pair_name = run.pair.name
@@ -197,7 +200,7 @@ module OrdersPro
 #    kind == 'sell' ? -1 : 1
     kind == 'buy' ? -1 : 1
   end
-
+  
   ##############################################################################
   #  Calculates parameters of the *buy* Run's orders
   #  
