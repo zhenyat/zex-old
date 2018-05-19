@@ -13,20 +13,19 @@ default: &default
   adapter: mysql2
   encoding: utf8
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  username: 
-  password: 
-  socket: /tmp/mysql.sock
+  username: <%= Rails.application.credentials.config[:db][:development][:username] %>
+  password: <%= Rails.application.credentials.config[:db][:development][:password] %>
 
 development:
   <<: *default
-  database: tra_development
+  database: zex_development
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
-  database: tra_test
+  database: zex_test
 
 # As with config/secrets.yml, you never want to store sensitive information,
 # like your database password, in your source code. If your source code is
@@ -49,6 +48,7 @@ test:
 #
 production:
   <<: *default
-  database: tra_production
-  username: tra
-  password: <%= ENV['TRA_DATABASE_PASSWORD'] %>
+  database: zex_production
+  username: <%= Rails.application.credentials.config[:db][:production][:username] %>
+  password: <%= Rails.application.credentials.config[:db][:production][:password] %>
+# password: <%= ENV['ZEX_DATABASE_PASSWORD'] %>
