@@ -9,12 +9,13 @@
 #   15.05.2015  Update for non-development environment
 #   02.08.2016  Git verification added
 #   18.11.2016  Deleting \n from GIT_BRANCH for better debugging format
+#   20.05.2018  Time Zone is taken into account
 ################################################################################
 if Rails.env.development?
   if File.directory?('.git')
     GIT_BRANCH           = `git symbolic-ref HEAD 2>/dev/null | cut -d"/" -f 3`.delete!("\n")
     GIT_COMMIT           = `git log --pretty=format:'%h' -n 1`
-    GIT_COMMIT_TIMESTAMP = Time.at `git log --pretty=format:'%ct' -n 1`.to_i
+    GIT_COMMIT_TIMESTAMP = Time.at(`git log --pretty=format:'%ct' -n 1`.to_i).in_time_zone
   else
     GIT_BRANCH = ''
   end

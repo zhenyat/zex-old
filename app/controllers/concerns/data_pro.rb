@@ -79,7 +79,7 @@ module DataPro
     price_last  = trades.last.price.to_f
     amount_tot  = trades.sum(&:amount).to_f
 
-    data << Time.at(time_frame.first).strftime('%d-%m-%Y %H:%M')
+    data << Time.at(time_frame.first).in_time_zone.strftime('%d-%m-%Y %H:%M')
     data << price_min
     data << price_first
     data << price_last
@@ -125,7 +125,6 @@ module DataPro
   def set_time_frame time, time_slot = 30.minutes
     time_frame = []
     time_frame[0] = (time.to_i / time_slot).round * time_slot
-#    time_frame[0] = Time.at(((time.to_i / time_slot).round * time_slot) + time_slot).to_i
     time_frame[1] = time_frame[0] + time_slot
     time_frame
   end
