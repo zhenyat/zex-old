@@ -1,6 +1,6 @@
 module PagesHelper
   def date_from_timestamp timestamp
-    Time.at(timestamp).strftime('%d-%m-%Y %H:%M:%S')
+    Time.at(timestamp).in_time_zone("Kuwait").strftime('%d-%m-%Y %H:%M:%S')
   end
   
   def order_status status
