@@ -150,7 +150,7 @@ module OrdersPro
   # # NB! Trade API method 'Trade' accepts *THREE* decimal digits for *rate* only: round(3) to be applied!
   ##############################################################################
   def place_order order, fix = false
-    puts "----- ZT! order = #{order}"
+
     if fix
       run  = order.order.run                        # FixOrder.Order.Run
       type = (run.kind == 'buy') ? 'sell' : 'buy'   # opposite to Run's kind
