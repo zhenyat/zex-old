@@ -3,8 +3,9 @@
 #                 Called by: zt_load_config.rb
 #   Relative path MUST BE applied to public/images, otherwise - sprockets error
 #
-#   11.10.2016  ZT  Inherited from ...
-#   30.08.2017  'access_restricted' key is added
+#   11.10.2016  ZT  Inherited from 95km
+#   30.08.2017  *access_restricted* key is added
+#   22.05.2018  *emulation* key added
 ################################################################################
 
 ##### Debugging   #####
@@ -26,6 +27,9 @@ MAIL_BCC = ZT_CONFIG['mail']['bcc']
 
 # Access control
 ACCESS_RESTRICTED = ZT_CONFIG['access_restricted']
+
+##### Account data emulation  #####
+EMULATION = ZT_CONFIG['emulation']
 
 ##### Time Slot for candles  #####
 PERIOD    = eval ZT_CONFIG['period'] 

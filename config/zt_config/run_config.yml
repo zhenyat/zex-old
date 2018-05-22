@@ -5,17 +5,19 @@
 #
 #   Loaded in:  ./initializers/zt_load_config.rb
 #
-#   11.10.2016  ZT  Inherited from BKC 95km
-#   30.08.2017  'access_restricted' key is added
+#   11.10.2016  ZT  Inherited from  95km
+#   30.08.2017  *access_restricted key* is added
+#   22.05.2018  *emulation* key added
 ################################################################################
 
-mail:
-  bcc:              evgt@mail.ru
-
+access_restricted:  false
+emulation:          true
+  
 debug:
   status:           true
 
-access_restricted:  false
+mail:
+  bcc:              evgt@mail.ru
 
 period:             1.day
 time_slot:          30.minutes

@@ -5,7 +5,7 @@
 #
 #   Source: http://railscasts.com/episodes/85-yaml-configuration-file
 #
-#   11.10.2016  ZT  Inherited from BKC 95km
+#   11.10.2016  ZT  Inherited from 95km
 ################################################################################
 
 # Gets default App configuration parameters

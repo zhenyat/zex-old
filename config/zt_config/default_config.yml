@@ -12,10 +12,14 @@
 #   NB! DO NOT UPDATE THIS FILE FOR DEBUG - use run_config.rb instead
 #
 #   11.10.2016  ZT  Inherited from BKC 95km
-#   30.08.2017  'access_restricted' key is added
+#   30.08.2017  *access_restricted* key is added
+#   22.05.2018  *mulation* key added
 ################################################################################
 
 defaults: &defaults
+
+  access_restricted:  true
+  emulation:          false
 
   debug:
     status:           false
@@ -24,9 +28,7 @@ defaults: &defaults
   mail:
     bcc:              zt@mail.ru
     path:             public/mail/attachments
-
-  access_restricted:  true
-  
+ 
   period:             1.day
   time_slot:          30.minutes
   

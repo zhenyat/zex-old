@@ -3,6 +3,7 @@
 #
 #   26.03.2018
 #   09.04.2018  Corrected (output is a hash)
+#   22.05.2018  Data emulation added
 ################################################################################
 module AccountPro
   extend ActiveSupport::Concern
@@ -29,9 +30,14 @@ module AccountPro
     data['funds'] = Hash[data['funds'].sort_by {|key, value| key}]  # Sorting by coin
     
     # Data Emulation
-    data['funds']['usd'] = 2000.0
-    data['funds']['bch'] = 12.0
-    
+    if EMULATION
+      Pair.active.each do |pair|
+        coin = pair.base.code.downcase
+        data['funds'][coin] = 1.0
+      end
+      data['funds']['usd'] = 2000.0
+    end
+
     data
   end
 end
