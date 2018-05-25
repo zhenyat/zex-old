@@ -11,7 +11,7 @@ class SelectionsController < ApplicationController
     @time_first = Time.new  params['selection']['time_first(1i)'].to_i, params['selection']['time_first(2i)'].to_i, params['selection']['time_first(3i)'].to_i, params['selection']['time_first(4i)'].to_i, params['selection']['time_first(5i)'].to_i
     @time_last  = Time.new  params['selection']['time_last(1i)'].to_i,  params['selection']['time_last(2i)'].to_i,  params['selection']['time_last(3i)'].to_i,  params['selection']['time_last(4i)'].to_i,  params['selection']['time_last(5i)'].to_i
 
-    @time_slots = [60, 120, 300, 600, 900, 1800]  # seconds
+    @time_slots = [60, 180, 300, 900, 1800, 3600]  # seconds
     trades = Trade.where('pair_id = ? AND timestamp >= ? AND timestamp <= ?', @pair.id, @time_first.to_i, @time_last.to_i,).order(:timestamp)
 
     candles = []

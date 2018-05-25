@@ -10,14 +10,14 @@
 #   22.05.2018  *emulation* key added
 ################################################################################
 
-access_restricted:  false
-emulation:          true
+#access_restricted:  false
+#emulation:          true
   
-debug:
-  status:           true
+#debug:
+#  status:           true
 
-mail:
-  bcc:              evgt@mail.ru
+#mail:
+#  bcc:              foo@gmail.com
 
 period:             1.day
 time_slot:          30.minutes

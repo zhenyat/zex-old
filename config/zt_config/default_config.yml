@@ -26,7 +26,7 @@ defaults: &defaults
     path:             ''
 
   mail:
-    bcc:              zt@mail.ru
+    bcc:              dummy@gmail.com
     path:             public/mail/attachments
  
   period:             1.day
