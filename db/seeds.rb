@@ -38,6 +38,7 @@ if Pair.count == 0
   Pair.find_by(name: 'btc_usd').update(status: 'active')
   Pair.find_by(name: 'ltc_usd').update(status: 'active')
   Pair.find_by(name: 'eth_usd').update(status: 'active')
+  Pair.find_by(name: 'bch_usd').update(status: 'active')
 end
 
 #if Run.count == 0
@@ -53,3 +54,11 @@ end
 #  order.update x_id: 11223344, x_pair: order.run.pair.name, x_type: o_type, x_done_amount: order.amount, x_rest_amount: 0.0, x_rate: order.price, x_base: 0.0, x_quote: 0.0, x_timestamp: Time.now, status: 'executed', x_status: 'x_executed'
 #  FixOrder.create order_id: order.id, price: order.fix_price, amount: order.fix_amount, x_id: 11667788, x_type: f_type
 #end
+
+if Collection.count == 0
+  Pair.active.each do |pair|
+    [60, 180, 300, 900, 1800, 3600].each do |slot|
+      Collection.create pair_id: pair.id, slot: slot
+    end
+  end
+end

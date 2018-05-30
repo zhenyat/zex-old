@@ -1,4 +1,4 @@
-%h3.text-info= "Order Book (Depth): Active Orders for each Pair (Sell / Buy)"
+%h3.text-info= "Order Book (Depth): Active Orders for each Pair (Asks: Sell offers / Bids: Buy offers)"
 %hr
 - if @asks.present? && @bids.present?
   .container-fluid
@@ -8,8 +8,8 @@
           %h4.text-danger= "#{pair}"
           %table.table.table-striped.table-hover.table-sm
             %thead.heading.thead-dark
-              %th.bg-danger= "Ask Amount"
-              %th.bg-danger= "@Price"
+              %th.bg-danger= "Amount"
+              %th.bg-danger= "@ask"
             %tbody
               - @asks[index].each do |ask|
                 %tr.table-danger
@@ -25,8 +25,8 @@
 
           %table.table.table-striped.table-hover.table-sm
             %thead.heading.thead-dark
-              %th.bg-success= "Bid Amount"
-              %th.bg-success= "@Price"
+              %th.bg-success= "Amount"
+              %th.bg-success= "@bid"
               %tbody
                 - @bids[index].each do |bid|
                   %tr.table-success

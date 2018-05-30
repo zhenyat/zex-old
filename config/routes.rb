@@ -8,6 +8,8 @@ Rails.application.routes.draw do
   get  'trades/order_book'
   get  'trades/tick_charts'
   get  'trades/update_cash'
+  
+  get  'candles/index'
 
   resources :runs do
     get :cancel,            on: :member

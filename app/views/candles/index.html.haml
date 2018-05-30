@@ -1,0 +1,18 @@
+.container-fluid
+  %h4 Candles generated
+  %table.table.table-hover
+    %thead
+      %tr
+        %th Collection ID
+        %th Pair
+        %th Slot
+        %th Candles
+        %th Elapsed Time
+    %tbody
+      - Collection.active.each do |collection|
+        %tr
+          %td= collection.id
+          %td= collection.pair.name
+          %td= collection.slot
+          %td= collection.candles.count
+          %td= @time_elapsed[collection.id]

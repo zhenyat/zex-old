@@ -6,6 +6,7 @@
 #   11.10.2016  ZT  Inherited from 95km
 #   30.08.2017  *access_restricted* key is added
 #   22.05.2018  *emulation* key added
+#   28.05.2018  *time_slots* added
 ################################################################################
 
 ##### Debugging   #####
@@ -32,5 +33,6 @@ ACCESS_RESTRICTED = ZT_CONFIG['access_restricted']
 EMULATION = ZT_CONFIG['emulation']
 
 ##### Time Slot for candles  #####
-PERIOD    = eval ZT_CONFIG['period'] 
-TIME_SLOT = eval ZT_CONFIG['time_slot']
+PERIOD     = eval ZT_CONFIG['period'] 
+TIME_SLOT  = eval ZT_CONFIG['time_slot']
+TIME_SLOTS = ZT_CONFIG['time_slots'] 

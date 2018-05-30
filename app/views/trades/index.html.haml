@@ -22,7 +22,7 @@
               %tr
                 %td= trade.tid
                 %td= date_from_timestamp trade.timestamp
-                - if trade.kind == 0
+                - if trade.sell?
                   %td.ask= 'Sell'
                 - else
                   %td.bid= 'Buy'

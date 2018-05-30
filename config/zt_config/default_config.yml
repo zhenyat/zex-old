@@ -31,6 +31,7 @@ defaults: &defaults
  
   period:             1.day
   time_slot:          30.minutes
+  time_slots:         [60, 180, 300, 900, 1800, 3600] # New Candles time slots set (in seconds)
   
 development:
   <<: *defaults

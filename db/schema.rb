@@ -10,7 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_03_19_185906) do
+ActiveRecord::Schema.define(version: 2018_05_26_132640) do
+
+  create_table "candles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "collection_id"
+    t.datetime "start_time", null: false
+    t.decimal "open", precision: 15, scale: 5, null: false
+    t.decimal "close", precision: 15, scale: 5, null: false
+    t.decimal "low", precision: 15, scale: 5, null: false
+    t.decimal "high", precision: 15, scale: 5, null: false
+    t.decimal "amount_bought", precision: 15, scale: 8, null: false
+    t.decimal "amount_sold", precision: 15, scale: 8, null: false
+    t.integer "buys", null: false
+    t.integer "sales", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["collection_id"], name: "index_candles_on_collection_id"
+  end
 
   create_table "coins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.string "name", null: false
@@ -18,6 +34,16 @@ ActiveRecord::Schema.define(version: 2018_03_19_185906) do
     t.integer "status", limit: 1, default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "collections", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.bigint "pair_id"
+    t.integer "slot", null: false
+    t.integer "status", limit: 1, default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pair_id", "slot"], name: "index_collections_on_pair_id_and_slot", unique: true
+    t.index ["pair_id"], name: "index_collections_on_pair_id"
   end
 
   create_table "crono_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
@@ -122,6 +148,8 @@ ActiveRecord::Schema.define(version: 2018_03_19_185906) do
     t.index ["pair_id"], name: "index_trades_on_pair_id"
   end
 
+  add_foreign_key "candles", "collections"
+  add_foreign_key "collections", "pairs"
   add_foreign_key "fix_orders", "orders"
   add_foreign_key "orders", "runs"
   add_foreign_key "runs", "pairs"

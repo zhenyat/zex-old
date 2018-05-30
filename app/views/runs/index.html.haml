@@ -24,7 +24,7 @@
       - @runs.each do |run|
         %tr
           %td= run.pair.name
-          - if run.kind == 'sell'
+          - if run.sell?
             %td.ask= run.kind
           - else
             %td.bid= run.kind
