@@ -12,10 +12,13 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/models/candle.rb</file>
             <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/candles_controller.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/models/candle.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/models/collection.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/candles/add.html.haml</file>
             <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/candles/index.html.haml</file>
             <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/concerns/candles_pro.rb</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/shared/_header.html.haml</file>
         </group>
     </open-files>
 </project-private>

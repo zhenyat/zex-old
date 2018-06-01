@@ -1,5 +1,5 @@
 .container-fluid
-  %h4 Candles generated
+  %h4 Candles per Collection
   %table.table.table-hover
     %thead
       %tr
@@ -15,4 +15,58 @@
           %td= collection.pair.name
           %td= collection.slot
           %td= collection.candles.count
-          %td= @time_elapsed[collection.id]
+          %td= @elapsed_time[collection.id]
+
+  %h4 Candle
+  - candle = Candle.last
+  %table.table.table-hover
+    %thead
+      %tr
+        %th Start Time
+        %th Open
+        %th Close
+        %th Low
+        %th High
+        %th Amount Bought
+        %th Amount Sold
+        %th Amount Total
+        %th Buys
+        %th Sales
+        %th Body
+    %tbody
+      %tr
+        %td= candle.start_time
+        %td= candle.open
+        %td= candle.close
+        %td= candle.low
+        %td= candle.high
+        %td= candle.amount_bought
+        %td= candle.amount_sold
+        %td= "#{candle.amount_bought + candle.amount_sold}"
+        %td= candle.buys
+        %td= candle.sales
+        %td= candle.body
+
+
+  %h Candle Trades
+  %table.table.table-striped.table-hover
+    %thead.heading
+      %tr
+        %th= 'TID'
+        %th= 'Date'
+        %th= 'Type'
+        %th= "Price"
+        %th= "Amount"
+        %th= "Total"
+  
+    - @candle_trades.all.each do |trade|
+      %tr
+        %td= trade.tid
+        %td= date_from_timestamp trade.timestamp
+        - if trade.sell?
+          %td.ask= 'Sell'
+        - else
+          %td.bid= 'Buy'
+        %td= trade.price
+        %td= trade.amount
+        %td= (trade.price * trade.amount).round(8)

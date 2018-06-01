@@ -7,26 +7,30 @@ class Candle < ApplicationRecord
   validates :high,  presence: true, numericality: { greater_than: 0 }
   
   def amount
-    self.amount_bought + self.amount_sold
+    amount_bought + amount_sold
   end
   
   def average
-    (self.high + self.low + self.close) / 3
+    (high + low + close) / 3
   end
   
   def body
-    (self.close - self.open).abs
+    (close - open).abs
+  end
+  
+  def color
+    (open >= close) ? 'red' : 'green'
   end
   
   def lower_shadow
-    (self.open >= self.close) ? self.close - self.low  : self.open - self.low
+    (open >= close) ? close - low  : open - low
   end
   
   def type
-    (self.open >= self.close) ? 'buy' : 'sell'
+    (open >= close) ? 'bea' : 'bull'
   end
   
   def upper_shadow
-    (self.open >= self.close) ? self.high - self.open  : self.high - self.close
+    (open >= close) ? high - open  : high - close
   end
 end

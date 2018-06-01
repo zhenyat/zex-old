@@ -23,15 +23,15 @@ module DataPro
     
     ### Get data from the Site
     
-    trades = ZtBtce.trades pairs: pair.name, limit: limit  # Hash of deals for key 'pair'
+    trades = ZtBtce.trades pairs: pair.name, limit: limit   # Hash of deals for key 'pair'
 
     if trades.present?
-      deals = trades.values.first.reverse                  # new deals as a hash array (last - the latest tid) 
+      deals = trades.values.first.reverse                   # new deals as a hash array (last - the latest tid) 
       
       ### Save data 
       deals.each do |deal|
         if deal['tid'] > max_tid
-          kind = (deal['type'] == 'ask') ? 0 : 1
+          kind = (deal['type'] == 'ask') ? 0 : 1            # sell | buy 
           Trade.create! pair_id: pair.id,       kind: kind,        price:     deal['price'],
                         amount: deal['amount'], tid:  deal['tid'], timestamp: deal['timestamp']
           add_count += 1 

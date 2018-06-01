@@ -9,8 +9,9 @@ Rails.application.routes.draw do
   get  'trades/tick_charts'
   get  'trades/update_cash'
   
+  get  'candles/add'
   get  'candles/index'
-
+  
   resources :runs do
     get :cancel,            on: :member
     get :check_orders,      on: :member
