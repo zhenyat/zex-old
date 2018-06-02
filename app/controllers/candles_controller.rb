@@ -13,7 +13,7 @@ class CandlesController < ApplicationController
       candle_timestamps = []
       
       if collection.candles.present?
-        first_timestamp = (collection.candles.last.start_time + slot).to_i
+        first_timestamp = collection.candles.last.start_stamp + slot
         trades          = Trade.where("pair_id = ? AND timestamp >= ?", pair_id, first_timestamp).order(:timestamp)
  
       candle_timestamps[0] = first_timestamp

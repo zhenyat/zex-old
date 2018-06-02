@@ -14,7 +14,7 @@ ActiveRecord::Schema.define(version: 2018_05_26_132640) do
 
   create_table "candles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "collection_id"
-    t.datetime "start_time", null: false
+    t.integer "start_stamp", null: false
     t.decimal "open", precision: 15, scale: 5, null: false
     t.decimal "close", precision: 15, scale: 5, null: false
     t.decimal "low", precision: 15, scale: 5, null: false

@@ -1,8 +1,8 @@
 class CreateCandles < ActiveRecord::Migration[5.2]
   def change
     create_table :candles do |t|
-      t.references :collection, foreign_key: true
-      t.datetime   :start_time,    null: false
+      t.references :collection,    foreign_key: true
+      t.integer    :start_stamp,   null: false
       t.decimal    :open,          null: false, precision: 15, scale: 5
       t.decimal    :close,         null: false, precision: 15, scale: 5
       t.decimal    :low,           null: false, precision: 15, scale: 5

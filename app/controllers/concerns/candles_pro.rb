@@ -35,35 +35,15 @@ module CandlesPro
     sales = trades.where(kind: 'sell').count
     buys  = trades.where(kind:  'buy').count
 
-    Candle.create! collection_id: collection_id,
-                   start_time: Time.at(timestamp).in_time_zone.strftime('%d-%m-%Y %H:%M'),
+    Candle.create! collection_id: collection_id, start_stamp: timestamp, 
                    open: open, close: close, low: low, high: high, 
                    amount_bought: amount_bought, amount_sold: amount_sold,
                    buys: buys, sales: sales
   end
   
-  def form_candle trades, time_frame
-    data   = []
-    low    = trades.minimum(:price).to_f       # BigDecimal to Float - MUST BE DONE!
-    high   = trades.maximum(:price).to_f
-    open   = trades.first.price.to_f
-    close  = trades.last.price.to_f
-    amount = trades.sum(&:amount).to_f
-
-    data << Time.at(time_frame.first).in_time_zone.strftime('%d-%m-%Y %H:%M')
-    data << price_min
-    data << price_first
-    data << price_last
-    data << price_max
-    data << (price_max + price_min + price_last) / 3  # to be presented as 2nd chart
-    data << amount_tot                                # to be presented as 3rd chart
-    
-    data
-  end
-  
   # Starting timestamp for candlesticks collection: slot, next to rounded timestamp
   def collection_starting_timestamp timestamp, slot
-    timestamp / slot * slot + slot
-#    Time.parse("2018-05-31 10:00").to_i
+#    timestamp / slot * slot + slot
+    Time.parse("2018-06-02 00:00").to_i
   end
 end
