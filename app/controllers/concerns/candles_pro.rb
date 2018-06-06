@@ -43,7 +43,7 @@ module CandlesPro
   
   # Starting timestamp for candlesticks collection: slot, next to rounded timestamp
   def collection_starting_timestamp timestamp, slot
-#    timestamp / slot * slot + slot
-    Time.parse("2018-06-02 00:00").to_i
+    timestamp / slot * slot + slot
+#    Time.parse("2018-06-04 09:00").to_i
   end
 end

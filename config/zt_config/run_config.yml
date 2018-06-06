@@ -20,4 +20,4 @@
 #  bcc:              foo@gmail.com
 
 period:             1.day
-time_slot:          30.minutes
+time_slot:          15.minutes

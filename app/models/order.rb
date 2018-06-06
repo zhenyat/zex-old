@@ -3,7 +3,7 @@
 #
 # Purpose:  Order generated for Run 
 #
-# Run attributes:
+# Order attributes:
 #   run        - Foreign key
 #   rate       - Price to be bought / sold at:          decimal
 #   amount     - Amount to be bought / sold:            decimal

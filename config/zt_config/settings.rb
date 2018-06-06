@@ -7,6 +7,7 @@
 #   30.08.2017  *access_restricted* key is added
 #   22.05.2018  *emulation* key added
 #   28.05.2018  *time_slots* added
+#   04.06.2018  Pattern constants
 ################################################################################
 
 ##### Debugging   #####
@@ -32,6 +33,11 @@ ACCESS_RESTRICTED = ZT_CONFIG['access_restricted']
 ##### Account data emulation  #####
 EMULATION = ZT_CONFIG['emulation']
 
+##### Pattern constants  #####
+EQUAL_PERCENT = ZT_CONFIG['equal_percent']
+LONG_SHADOW   = ZT_CONFIG['long_shadow']
+SMALL_SHADOW  = ZT_CONFIG['small_shadow']
+  
 ##### Time Slot for candles  #####
 PERIOD     = eval ZT_CONFIG['period'] 
 TIME_SLOT  = eval ZT_CONFIG['time_slot']
