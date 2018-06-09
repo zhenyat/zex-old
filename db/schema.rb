@@ -127,6 +127,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.integer "status", limit: 1, default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_patterns_on_name", unique: true
   end
 
   create_table "runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|

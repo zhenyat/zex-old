@@ -18,4 +18,7 @@ class Pattern < ApplicationRecord
   
   enum mix:    %w(one two three)
   enum status: %w(active archived)
+  
+  validates :name,  presence: true, uniqueness: true
+  validates :title, presence: true
 end
