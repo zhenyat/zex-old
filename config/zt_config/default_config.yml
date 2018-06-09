@@ -32,8 +32,8 @@ defaults: &defaults
 
   # Pattern 
   equal_percent:      0.05  # Percent (default | 1.0?)         ABS(CL - OP) < (EP/100) * MIN(CL, OP)
-  long_shadow:        2.0   # Factor  (default).               Shadow_Length >= LONG_SHADOW  * Body_Length (default)
-  small_shadow:       1.0   # Factor  (default | 0.5 | 0.75).  Shadow_Length <  SMALL_SHADOW * Body_Length (default or 0.5 | 0.75)
+  long_shadow:        2.0   # Factor  (default)                Shadow_Length >= LONG_SHADOW  * Body_Length (default)
+  small_shadow:       1.0   # Factor  (default | 0.5 | 0.75)   Shadow_Length <  SMALL_SHADOW * Body_Length (default or 0.5 | 0.75)
 
   period:             1.day
   time_slot:          30.minutes

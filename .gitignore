@@ -28,7 +28,9 @@
 # Ignore data files
 /data/*
 
-/public/assets
+/public/assets/*
+/public/uploads/*
+
 .byebug_history
 
 # Ignore master key for decrypting credentials and more.

@@ -1,0 +1,23 @@
+= simple_form_for(@pattern) do |f|
+  = f.error_notification
+
+  .form-inputs
+    = f.input :name
+    = f.input :title
+    = f.input :mix
+    = f.input :description
+    .input-group-addon
+      = f.input :icon, as: :file
+      -if f.object.icon?
+        .input-group
+          = image_tag @pattern.icon.url
+          .input-group-addon
+            = f.input :remove_icon, as: :boolean
+    = f.input :status
+
+  .form-actions
+    .row
+      .col-md-2
+        = f.submit class: 'btn btn-primary btn-block'
+      .col-md-1
+        = link_to 'Back', patterns_path, class: 'btn btn-info btn-block'

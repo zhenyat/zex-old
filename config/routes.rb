@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :patterns
   get  'selections/new'
   post 'selections/charts'
   

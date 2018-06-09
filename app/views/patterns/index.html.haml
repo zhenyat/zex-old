@@ -1,0 +1,31 @@
+.container-fluid
+  %h1 Listing patterns
+
+  %table.table.table-striped.table-hover
+    %thead
+      %tr
+        %th Name
+        %th Title
+        /%th Mix
+        /%th Description
+        %th Icon
+        %th Status
+        %th
+        %th
+        %th
+
+    %tbody
+      - @patterns.each do |pattern|
+        %tr
+          %td= pattern.name
+          %td= pattern.title
+          /%td= pattern.mix
+          /%td= pattern.description
+          %td= image_tag pattern.icon.url if pattern.icon?
+          %td= status_mark pattern.status
+          %td= render 'shared/index_buttons', resource: pattern
+
+  %br
+  .row
+    .col-md-2
+      = link_to 'New Pattern', new_pattern_path, class: 'btn btn-primary btn-block'

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_05_26_132640) do
+ActiveRecord::Schema.define(version: 2018_06_08_113536) do
 
   create_table "candles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.bigint "collection_id"
@@ -116,6 +116,17 @@ ActiveRecord::Schema.define(version: 2018_05_26_132640) do
     t.datetime "updated_at", null: false
     t.index ["base_id"], name: "index_pairs_on_base_id"
     t.index ["quote_id"], name: "index_pairs_on_quote_id"
+  end
+
+  create_table "patterns", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "title", null: false
+    t.integer "mix", limit: 1, default: 0, null: false
+    t.text "description"
+    t.string "icon"
+    t.integer "status", limit: 1, default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
