@@ -13,11 +13,9 @@
 #access_restricted:  false
 #emulation:          true
   
-#debug:
-#  status:           true
-
-#mail:
-#  bcc:              foo@gmail.com
+debug:
+  status:           false
 
 period:             1.day
 time_slot:          15.minutes
+time_slots:         [300, 900, 1800, 3600] # New Candles time slots set (in seconds)
