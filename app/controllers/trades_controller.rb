@@ -162,7 +162,7 @@ def order_book
     @candles_first = []
     @candles_last  = []
     
-    Pair.active.all.each do |pair|
+    Pair.active.each do |pair|
       pair_name = pair.name
       
       data = fetch_cashed_data pair_name
@@ -170,6 +170,7 @@ def order_book
       data.delete_if {|d| d.first.to_time < time_round((Time.now - period), TIME_SLOT)}   # Remove candles out of range
 
       if data.present?
+        @no_data    = false
         candle_last = data.pop                          # Remove last candle (cause it could not be finalized)
         since       = candle_last.first.to_time
 
@@ -198,6 +199,9 @@ def order_book
         @pairs         << pair_name
         @candles_first << data.first
         @candles_last  << data.last
+        
+      else                # No data: too much time past since last update...
+        @no_data = true
       end
     end
 

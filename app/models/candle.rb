@@ -47,7 +47,13 @@ class Candle < ApplicationRecord
   def doji?
     body < EQUAL_PERCENT / 100.0 * [close, open].min
   end
-    
+
+  def dragonfly_doji?
+    if self.doji?
+      
+    end
+  end
+  
   def lower_shadow
     (open >= close) ? close - low  : open - low
   end

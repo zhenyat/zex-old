@@ -1,6 +1,9 @@
 %h5= "Time elapsed to update cashed data files: #{@time_elapsed} seconds"
 %hr
-- @pairs.each_with_index do |pair, index|
-  %h3= "#{pair}"
-  %p= "First candle: #{@candles_first[index]}"
-  %p= "Last candle: #{@candles_last[index]}"
+- if @no_data
+  %h4.ask= "No cash for the Period! Create it again"
+- else 
+  - @pairs.each_with_index do |pair, index|
+    %h3= "#{pair}"
+    %p= "First candle: #{@candles_first[index]}"
+    %p= "Last candle: #{@candles_last[index]}"

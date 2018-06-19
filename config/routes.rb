@@ -13,6 +13,10 @@ Rails.application.routes.draw do
   get  'candles/add'
   get  'candles/index'
   
+  get  'patrec/doji'
+  get  'patrec/new'
+  post 'patrec/index'
+  
   resources :runs do
     get :cancel,            on: :member
     get :check_orders,      on: :member

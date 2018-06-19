@@ -1,6 +1,6 @@
 .container-fluid
   .row
-    .col-md-8
+    .col-md-7
       .row
         .col-md-1
           %h5= link_to "Home",         root_path
@@ -16,15 +16,16 @@
           %h5= link_to "Order Book",   trades_order_book_path
         .col-md-1
           %h5= link_to "Runs",         runs_path
-    .col-md-4
+    .col-md-5
       .row
-        .col-md-3
+        .col-md-2
           %h5= link_to "Selections",  selections_new_path
         .col-md-2
           %h5= link_to "Ticks",       trades_tick_charts_path
-        .col-md-3
+        .col-md-2
           %h5= link_to "Candles",     candles_add_path
-        .col-md-3
+        .col-md-2
           %h5= link_to "Patterns",    patterns_path
-
+        .col-md-2
+          %h5= link_to "PatRec",      patrec_doji_path
 %hr

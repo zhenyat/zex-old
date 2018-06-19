@@ -1,0 +1,45 @@
+.container-fluid
+  %h1 Listing Doji 
+
+  %table.table.table-striped.table-hover
+    %thead
+      %tr
+        %th ID
+        %th Pair
+        /%th Mix
+        /%th Description
+        %th Time Frame
+        %th Open
+        %th Close
+        %th Body
+        %th B/{O,C} %
+        %th Low
+        %th High
+        %th Amount Bought
+        %th Amount Sold
+        %th Amount Total
+        %th Buys
+        %th Sales
+
+    %tbody
+      - @doji.each do |d|
+        - amount_total = d.amount_bought + d.amount_sold
+        %tr
+          %td= d.id
+          %td= d.collection.pair.name
+          %td= date_from_timestamp d.start_stamp
+          %td= d.open
+          %td= d.close
+          %td= d.body
+          %td= ((d.body/[d.close, d.open].min)*100.0).round(4)
+          %td= d.low
+          %td= d.high
+          %td= d.amount_bought
+          %td= d.amount_sold
+          - if d.type == 'bear'
+            %td.ask= amount_total
+          - else
+            %td.bid= amount_total
+          %td= d.buys
+          %td= d.sales
+

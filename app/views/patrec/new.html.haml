@@ -1,0 +1,11 @@
+.container-fluid
+  = simple_form_for :selection, :url => patrec_index_path do |f|
+    = f.error_notification
+
+    .row
+      .col-md-4
+        .form-inputs
+          = f.input :pair,     collection: Pair.active.order(:name),            autofocus: true, include_blank: false
+          = f.input :slot,     collection: Collection.active.pluck(:slot).uniq, autofocus: true, include_blank: false
+          = f.input :patterns, collection: Pattern.active.order(:title).pluck(:title), input_html: {multiple: true}, autofocus: true, include_blank: false
+          = f.submit "Select"
