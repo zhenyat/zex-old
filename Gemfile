@@ -44,6 +44,8 @@
 #   09.01.2018  Ruby 2.5.0, bootstrap 4.0.0.beta3
 #   07.02.2018  Rails 5.2.0.rc1, bootstrap 4.0.0, webpacker
 #   25.04.2018  Ruby 2.5.1, Rails 2.5.0
+#   30.08.2018  rails 5.2.1
+#               tested with mysql 8 (mysql2 0.5.x) and puma 3.12
 ################################################################################
 source 'https://rubygems.org'
 ruby '2.5.1'
@@ -53,11 +55,11 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.2.0'                        # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails', '~> 5.2.1'                        # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 
 #gem 'sqlite3'                                 # Use sqlite3    as the database for Active Record
 #gem 'sqlite3', groups: [:test, :development]
-gem 'mysql2', '~> 0.4.4'                        # Use mysql      as the database for Active Record
+gem 'mysql2', '~> 0.5.2'                        # Use mysql      as the database for Active Record
 #gem 'pg', '~> 0.19.0'                          # Use postgresql as the database for Active Record
 #gem 'pg_search', '~> 2.0', '>= 2.0.1'          # https://mkdev.me/posts/kak-delat-full-text-poisk-v-rails-pri-pomoschi-postgresql
 gem 'seed_dump'                                 # https://github.com/rroblak/seed_dump
@@ -78,7 +80,7 @@ gem 'jquery-rails'                              # Use jquery as the JavaScript l
 gem 'turbolinks', '~> 5'                        # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'jbuilder', '~> 2.5'                        # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 
-gem 'puma', '~> 3.11'                           # Use Puma as the app server
+gem 'puma', '~> 3.12'                           # Use Puma as the app server
 
 #gem 'redis', '~> 4.0'                          # Use Redis adapter to run Action Cable in production
 gem 'bcrypt', '~> 3.1.7'                        # Use ActiveModel has_secure_password
