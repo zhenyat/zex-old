@@ -12,14 +12,7 @@
     </editor-bookmarks>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/config/zt_config/settings.rb</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/models/candle.rb</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/assets/stylesheets/application.scss</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/concerns/candles_pro.rb</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/config/zt_config/run_config.yml</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/views/patrec/doji.html.haml</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/app/controllers/patrec_controller.rb</file>
-            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/config/zt_config/default_config.yml</file>
+            <file>file:/Users/zhenya/ZT_Lab/RoR/Projects/zex/Gemfile</file>
         </group>
     </open-files>
 </project-private>
