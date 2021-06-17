@@ -2,17 +2,17 @@
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
 #
-# Note that this schema.rb definition is the authoritative source for your
-# database schema. If you need to create the application database on another
-# system, you should be using db:schema:load, not running all the migrations
-# from scratch. The latter is a flawed and unsustainable approach (the more migrations
-# you'll amass, the slower it'll run and the greater likelihood for issues).
+# This file is the source Rails uses to define your schema when running `bin/rails
+# db:schema:load`. When creating a new database, `bin/rails db:schema:load` tends to
+# be faster and is potentially less error prone than running all of your
+# migrations from scratch. Old migrations may fail to apply correctly if those
+# migrations use external dependencies or application code.
 #
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema.define(version: 2018_06_08_113536) do
 
-  create_table "candles", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "candles", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "collection_id"
     t.integer "start_stamp", null: false
     t.decimal "open", precision: 15, scale: 5, null: false
@@ -28,7 +28,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.index ["collection_id"], name: "index_candles_on_collection_id"
   end
 
-  create_table "coins", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "coins", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.string "code", null: false
     t.integer "status", limit: 1, default: 0, null: false
@@ -36,7 +36,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "collections", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "collections", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "pair_id"
     t.integer "slot", null: false
     t.integer "status", limit: 1, default: 0, null: false
@@ -46,9 +46,9 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.index ["pair_id"], name: "index_collections_on_pair_id"
   end
 
-  create_table "crono_jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "crono_jobs", charset: "utf8mb3", force: :cascade do |t|
     t.string "job_id", null: false
-    t.text "log", limit: 4294967295
+    t.text "log", size: :long
     t.datetime "last_performed_at"
     t.boolean "healthy"
     t.datetime "created_at", null: false
@@ -56,7 +56,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.index ["job_id"], name: "index_crono_jobs_on_job_id", unique: true
   end
 
-  create_table "fix_orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "fix_orders", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "order_id"
     t.decimal "rate", precision: 15, scale: 5
     t.decimal "amount", precision: 15, scale: 8
@@ -77,7 +77,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.index ["order_id"], name: "index_fix_orders_on_order_id"
   end
 
-  create_table "orders", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "orders", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "run_id"
     t.decimal "rate", precision: 15, scale: 5
     t.decimal "amount", precision: 15, scale: 8
@@ -100,7 +100,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.index ["run_id"], name: "index_orders_on_run_id"
   end
 
-  create_table "pairs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "pairs", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "base_id"
     t.bigint "quote_id"
     t.string "name", null: false
@@ -118,7 +118,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.index ["quote_id"], name: "index_pairs_on_quote_id"
   end
 
-  create_table "patterns", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "patterns", charset: "utf8mb3", force: :cascade do |t|
     t.string "name", null: false
     t.string "title", null: false
     t.integer "mix", limit: 1, default: 0, null: false
@@ -130,7 +130,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.index ["name"], name: "index_patterns_on_name", unique: true
   end
 
-  create_table "runs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "runs", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "pair_id"
     t.integer "kind", limit: 1, default: 0, null: false
     t.decimal "depo", precision: 15, scale: 5, null: false
@@ -148,7 +148,7 @@ ActiveRecord::Schema.define(version: 2018_06_08_113536) do
     t.index ["pair_id"], name: "index_runs_on_pair_id"
   end
 
-  create_table "trades", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+  create_table "trades", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "pair_id"
     t.integer "kind", limit: 1
     t.decimal "price", precision: 15, scale: 5

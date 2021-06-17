@@ -48,14 +48,14 @@
 #               tested with mysql 8 (mysql2 0.5.x) and puma 3.12
 ################################################################################
 source 'https://rubygems.org'
-ruby '2.5.1'
+ruby '3.0.1'
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '~> 5.2.1'                        # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
+gem 'rails', '~> 6.1.3.2'                       # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 
 #gem 'sqlite3'                                 # Use sqlite3    as the database for Active Record
 #gem 'sqlite3', groups: [:test, :development]
